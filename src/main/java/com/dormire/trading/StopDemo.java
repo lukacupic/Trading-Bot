@@ -8,8 +8,10 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
 import javax.imageio.ImageIO;
+import javax.sound.sampled.*;
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.Scanner;
 
 public class StopDemo {
@@ -99,18 +101,27 @@ public class StopDemo {
     private static void showAlert(String message) {
         new Thread(() -> {
             try {
+                playSound();
+
                 Notify.create()
                         .title("Papi Musk")
                         .position(Pos.TOP_RIGHT)
                         .text(message)
                         .setScreen(1)
                         .image(ImageIO.read(new File("src/main/resources/musk.png")))
-                        .shake(1000, 5)
-                        .showInformation();
-            } catch (IOException e) {
+                        .show();
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }).start();
+    }
+
+    private static void playSound() throws IOException, UnsupportedAudioFileException, LineUnavailableException {
+        File f = new File("src/main/resources/ding.wav");
+        AudioInputStream audioIn = AudioSystem.getAudioInputStream(f.toURI().toURL());
+        Clip clip = AudioSystem.getClip();
+        clip.open(audioIn);
+        clip.loop(1);
     }
 
     private static double getCurrentPrice(WebDriver driver) {
