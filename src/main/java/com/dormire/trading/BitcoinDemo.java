@@ -5,6 +5,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 
 public class BitcoinDemo {
+
     public static void main(String[] args) throws InterruptedException {
         WebDriver driver = Initializer.getDriver();
 
