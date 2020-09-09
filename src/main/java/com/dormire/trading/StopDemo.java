@@ -18,7 +18,7 @@ public class StopDemo {
     /**
      * Waiting time (in seconds).
      */
-    private static int WAIT_TIME = 5;
+    private static int WAIT_TIME = 5*60;
 
     public static void main(String[] args) throws InterruptedException {
         WebDriver driver = Initializer.getDriver();
@@ -42,6 +42,14 @@ public class StopDemo {
         showPromptSymbol();
         double buyPrice = Double.parseDouble(sc.nextLine());
 
+        while (!(getCurrentPrice(driver) >= 1.012 * buyPrice)) {
+            // Keep checking for a profit goal
+            Thread.sleep(1000);
+        }
+
+        String message = String.format("Please raise stop loss to $%f\n", 1.012 * buyPrice);
+        showAlert(message);
+
         while (true) {
             // Step 2
             Thread.sleep(WAIT_TIME * 1000);
@@ -50,7 +58,7 @@ public class StopDemo {
                 Thread.sleep(1000);
             }
 
-            String message = String.format("Please set stop loss at $%f\n", buyPrice);
+            message = String.format("Please set stop loss at $%f\n", buyPrice);
             showAlert(message);
 
             // Step 3
