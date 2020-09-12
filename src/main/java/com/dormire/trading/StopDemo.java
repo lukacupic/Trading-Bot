@@ -1,115 +1,103 @@
 package com.dormire.trading;
 
-import com.dormire.trading.utils.DriverHandler;
-import com.dormire.trading.utils.ProfitChecker;
-import com.dormire.trading.utils.Util;
-import org.openqa.selenium.WebDriver;
-
-import java.util.Scanner;
-
 public class StopDemo {
 
-    /**
-     * Waiting time (in seconds).
-     */
     private static final int WAIT_TIME = 5;
 
+    private static String ticker;
+    private static double transactionPrice;
+    private static double profitPercentage;
+    private static int noStonks;
+
+    private static IOHandler io = new IOHandler();
+    private static StonkDriver driver;
+    private static ProfitChecker checker;
+
     public static void main(String[] args) throws InterruptedException {
-        WebDriver driver = DriverHandler.getDriver();
-
-        Scanner sc = new Scanner(System.in);
-
-        String ticker;
         do {
-            Util.showAlert("Please enter the stonk ticker");
-            showPromptSymbol();
-            ticker = sc.nextLine();
+            ticker = io.getString("Please enter the stonk ticker");
         }
-        while (!isAlpha(ticker));
+        while (!isAlphabetical(ticker));
 
         String url = String.format("https://www.tradingview.com/chart/?symbol=%s", ticker);
-        driver.get(url);
+        driver = new StonkDriver(url);
 
-        // Step 1
-        Util.showAlert("Please enter the buy price:");
-        showPromptSymbol();
-        double transactionPrice = Double.parseDouble(sc.nextLine());
-
-        Util.showAlert("Please enter the number of stonks:");
-        showPromptSymbol();
-        int noStonks = Integer.parseInt(sc.nextLine());
-
-        Util.showAlert("Please enter the wanted profit percentage:");
-        showPromptSymbol();
-        double profitPercentage = Double.parseDouble(sc.nextLine());
-
-        ProfitChecker checker = new ProfitChecker(driver, transactionPrice, profitPercentage);
-        checker.start();
+        step1();
 
         while (true) {
-            // Step 2
-            Thread.sleep(WAIT_TIME * 1000);
-
-            while (!(Util.getCurrentPrice(driver) > transactionPrice)) {
-                Thread.sleep(1000);
-            }
-
-            String message = String.format("Please set stop loss at $%f for %d stonks\n", transactionPrice, noStonks);
-            Util.showAlert(message);
-
-            // Step 3
-            do {
-                Util.showAlert("Please type 'OK' to confirm setting stop loss:");
-                showPromptSymbol();
-            }
-            while (!sc.nextLine().equals("OK"));
-
-            // Step 4
-            while (!(Util.getCurrentPrice(driver) < transactionPrice)) {
-                Thread.sleep(1000);
-            }
-
-            Util.showAlert("Stop loss has been activated");
-
-            Util.showAlert("Please enter sell fill price:");
-            showPromptSymbol();
-            transactionPrice = Double.parseDouble(sc.nextLine());
-
-            Thread.sleep(WAIT_TIME * 1000);
-
-            // Step 5
-            while (!(Util.getCurrentPrice(driver) < transactionPrice)) {
-                Thread.sleep(1000);
-            }
-
-            message = String.format("Please set stop buy at $%f for %d stonks\n", transactionPrice, noStonks);
-            Util.showAlert(message);
-
-            // Step 6
-            do {
-                Util.showAlert("Please type 'OK' to confirm setting stop buy:");
-                showPromptSymbol();
-            }
-            while (!sc.nextLine().equals("OK"));
-
-            // Step 7
-            while (!(Util.getCurrentPrice(driver) > transactionPrice)) {
-                Thread.sleep(1000);
-            }
-
-            Util.showAlert("Stop buy has been activated");
-
-            Util.showAlert("Please enter buy fill price:");
-            showPromptSymbol();
-            transactionPrice = Double.parseDouble(sc.nextLine());
+            step2();
+            step3();
+            step4();
+            step5();
+            step6();
+            step7();
         }
     }
 
-    private static void showPromptSymbol() {
-        System.out.print("> ");
+    private static void step1() {
+        transactionPrice = io.getDouble("Please enter the buy price:");
+        noStonks = io.getInteger("Please enter the number of stonks:");
+        profitPercentage = io.getDouble("Please enter the wanted profit percentage:");
+
+        checker = new ProfitChecker(driver, io, transactionPrice, profitPercentage);
+        checker.start();
     }
 
-    public static boolean isAlpha(String s) {
+    private static void step2() throws InterruptedException {
+        Thread.sleep(WAIT_TIME * 1000);
+
+        while (!(driver.getCurrentPrice() > transactionPrice)) {
+            Thread.sleep(1000);
+        }
+
+        String message = String.format("Please set stop loss at $%f for %d stonks\n", transactionPrice, noStonks);
+        io.showAlert(message);
+    }
+
+    private static void step3() {
+        do {
+            io.showInputAlert("Please type 'OK' to confirm setting stop loss:");
+        }
+        while (!io.isInput("OK"));
+    }
+
+    private static void step4() throws InterruptedException {
+        while (!(driver.getCurrentPrice() < transactionPrice)) {
+            Thread.sleep(1000);
+        }
+
+        io.showAlert("Stop loss has been activated");
+        transactionPrice = io.getDouble("Please enter sell fill price:");
+
+        Thread.sleep(WAIT_TIME * 1000);
+    }
+
+    private static void step5() throws InterruptedException {
+        while (!(driver.getCurrentPrice() < transactionPrice)) {
+            Thread.sleep(1000);
+        }
+
+        String message = String.format("Please set stop buy at $%f for %d stonks\n", transactionPrice, noStonks);
+        io.showAlert(message);
+    }
+
+    private static void step6() {
+        do {
+            io.showInputAlert("Please type 'OK' to confirm setting stop buy:");
+        }
+        while (!io.isInput("OK"));
+    }
+
+    private static void step7() throws InterruptedException {
+        while (!(driver.getCurrentPrice() > transactionPrice)) {
+            Thread.sleep(1000);
+        }
+
+        io.showAlert("Stop buy has been activated");
+        transactionPrice = io.getDouble("Please enter buy fill price:");
+    }
+
+    private static boolean isAlphabetical(String s) {
         return s != null && s.matches("^[a-zA-Z]*$");
     }
 }
