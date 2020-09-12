@@ -1,6 +1,6 @@
 package com.dormire.trading;
 
-import com.dormire.trading.util.Initializer;
+import com.dormire.trading.utils.DriverHandler;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -12,7 +12,7 @@ import java.util.List;
 public class StonkDemo {
 
     public static void main(String[] args) throws InterruptedException {
-        WebDriver driver = Initializer.getDriver();
+        WebDriver driver = DriverHandler.getDriver();
 
         driver.get("https://demo.trading212.com/");
 
