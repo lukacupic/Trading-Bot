@@ -26,7 +26,7 @@ public class Util {
 
                 Notify.create()
                         .title("Papi Musk")
-                        .position(Pos.TOP_RIGHT)
+                        .position(Pos.BOTTOM_LEFT)
                         .text(message)
                         .setScreen(1)
                         .image(ImageIO.read(new File("src/main/resources/musk.png")))
