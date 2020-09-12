@@ -14,7 +14,8 @@ import java.io.IOException;
 public class Util {
 
     public static double getCurrentPrice(WebDriver driver) {
-        WebElement element = driver.findElement(By.xpath("/html/body/div[2]/div[5]/div/header/div/div[3]/div[1]/div/div/div/div[1]/div[1]"));
+//        WebElement element = driver.findElement(By.xpath("/html/body/div[2]/div[5]/div/header/div/div[3]/div[1]/div/div/div/div[1]/div[1]"));
+        WebElement element = driver.findElement(By.className("buttonText-1vopxN9j"));
         return Double.parseDouble(element.getText());
     }
 

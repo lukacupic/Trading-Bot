@@ -27,7 +27,7 @@ public class StopDemo {
         }
         while (!isAlpha(ticker));
 
-        String url = String.format("https://www.tradingview.com/symbols/%s/", ticker);
+        String url = String.format("https://www.tradingview.com/chart/?symbol=%s", ticker);
         driver.get(url);
 
         // Step 1
