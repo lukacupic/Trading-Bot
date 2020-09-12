@@ -1,13 +1,13 @@
 package com.dormire.trading;
 
-import com.dormire.trading.util.Initializer;
+import com.dormire.trading.utils.DriverHandler;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 
 public class BitcoinDemo {
 
     public static void main(String[] args) throws InterruptedException {
-        WebDriver driver = Initializer.getDriver();
+        WebDriver driver = DriverHandler.getDriver();
 
         driver.get("https://www.tradingview.com/symbols/BTCUSD/");
         driver.manage().deleteAllCookies();

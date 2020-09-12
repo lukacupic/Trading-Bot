@@ -1,10 +1,10 @@
-package com.dormire.trading.util;
+package com.dormire.trading.utils;
 
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 
-public class Initializer {
+public class DriverHandler {
 
     /**
      * Initializes and returns a new driver depending on the running OS.
