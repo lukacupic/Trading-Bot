@@ -12,9 +12,7 @@ public class StopDemo {
     /**
      * Waiting time (in seconds).
      */
-    private static int WAIT_TIME = 5;
-
-    private static int currentStep;
+    private static final int WAIT_TIME = 5;
 
     public static void main(String[] args) throws InterruptedException {
         WebDriver driver = DriverHandler.getDriver();
@@ -34,12 +32,14 @@ public class StopDemo {
 
         // Step 1
         Util.showAlert("Please enter the buy price:");
-
         showPromptSymbol();
         double buyPrice = Double.parseDouble(sc.nextLine());
 
-        Util.showAlert("Please enter the wanted profit percentage:");
+        Util.showAlert("Please enter the number of stonks:");
+        showPromptSymbol();
+        int noStonks = Integer.parseInt(sc.nextLine());
 
+        Util.showAlert("Please enter the wanted profit percentage:");
         showPromptSymbol();
         double profitPercentage = Double.parseDouble(sc.nextLine());
 
@@ -54,7 +54,7 @@ public class StopDemo {
                 Thread.sleep(1000);
             }
 
-            String message = String.format("Please set stop loss at $%f\n", buyPrice);
+            String message = String.format("Please set stop loss at $%f for %d stonks\n", buyPrice, noStonks);
             Util.showAlert(message);
 
             // Step 3
@@ -78,7 +78,7 @@ public class StopDemo {
                 Thread.sleep(1000);
             }
 
-            message = String.format("Please set stop buy at $%f\n", buyPrice);
+            message = String.format("Please set stop buy at $%f for %d stonks\n", buyPrice, noStonks);
             Util.showAlert(message);
 
             // Step 6
