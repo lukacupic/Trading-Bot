@@ -33,7 +33,7 @@ public class StopDemo {
         // Step 1
         Util.showAlert("Please enter the buy price:");
         showPromptSymbol();
-        double buyPrice = Double.parseDouble(sc.nextLine());
+        double transactionPrice = Double.parseDouble(sc.nextLine());
 
         Util.showAlert("Please enter the number of stonks:");
         showPromptSymbol();
@@ -43,18 +43,18 @@ public class StopDemo {
         showPromptSymbol();
         double profitPercentage = Double.parseDouble(sc.nextLine());
 
-        ProfitChecker checker = new ProfitChecker(driver, buyPrice, profitPercentage);
+        ProfitChecker checker = new ProfitChecker(driver, transactionPrice, profitPercentage);
         checker.start();
 
         while (true) {
             // Step 2
             Thread.sleep(WAIT_TIME * 1000);
 
-            while (!(Util.getCurrentPrice(driver) > buyPrice)) {
+            while (!(Util.getCurrentPrice(driver) > transactionPrice)) {
                 Thread.sleep(1000);
             }
 
-            String message = String.format("Please set stop loss at $%f for %d stonks\n", buyPrice, noStonks);
+            String message = String.format("Please set stop loss at $%f for %d stonks\n", transactionPrice, noStonks);
             Util.showAlert(message);
 
             // Step 3
@@ -65,20 +65,24 @@ public class StopDemo {
             while (!sc.nextLine().equals("OK"));
 
             // Step 4
-            while (!(Util.getCurrentPrice(driver) < buyPrice)) {
+            while (!(Util.getCurrentPrice(driver) < transactionPrice)) {
                 Thread.sleep(1000);
             }
 
             Util.showAlert("Stop loss has been activated");
 
+            Util.showAlert("Please enter sell fill price:");
+            showPromptSymbol();
+            transactionPrice = Double.parseDouble(sc.nextLine());
+
             Thread.sleep(WAIT_TIME * 1000);
 
             // Step 5
-            while (!(Util.getCurrentPrice(driver) < buyPrice)) {
+            while (!(Util.getCurrentPrice(driver) < transactionPrice)) {
                 Thread.sleep(1000);
             }
 
-            message = String.format("Please set stop buy at $%f for %d stonks\n", buyPrice, noStonks);
+            message = String.format("Please set stop buy at $%f for %d stonks\n", transactionPrice, noStonks);
             Util.showAlert(message);
 
             // Step 6
@@ -89,11 +93,15 @@ public class StopDemo {
             while (!sc.nextLine().equals("OK"));
 
             // Step 7
-            while (!(Util.getCurrentPrice(driver) > buyPrice)) {
+            while (!(Util.getCurrentPrice(driver) > transactionPrice)) {
                 Thread.sleep(1000);
             }
 
             Util.showAlert("Stop buy has been activated");
+
+            Util.showAlert("Please enter buy fill price:");
+            showPromptSymbol();
+            transactionPrice = Double.parseDouble(sc.nextLine());
         }
     }
 
