@@ -16,11 +16,11 @@ public class ProfitChecker extends Thread {
 
     @Override
     public void run() {
-        while (!(Util.getCurrentPrice(driver) >= (1 + this.profitPercentage / 100) * buyPrice)) {
-            try {
+        try {
+            while (!(Util.getCurrentPrice(driver) >= (1 + this.profitPercentage / 100) * buyPrice)) {
                 Thread.sleep(1000);
-            } catch (InterruptedException ignorable) {
             }
+        } catch (RuntimeException | InterruptedException ignorable) {
         }
 
         Util.showAlert("Please set stop loss at $" + (1 + this.profitPercentage / 100) * buyPrice);

@@ -12,7 +12,9 @@ public class StopDemo {
     /**
      * Waiting time (in seconds).
      */
-    private static int WAIT_TIME = 5 * 60;
+    private static int WAIT_TIME = 5;
+
+    private static int currentStep;
 
     public static void main(String[] args) throws InterruptedException {
         WebDriver driver = DriverHandler.getDriver();
