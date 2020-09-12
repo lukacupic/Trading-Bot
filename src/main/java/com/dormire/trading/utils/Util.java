@@ -20,13 +20,15 @@ public class Util {
     }
 
     public static void showAlert(String message) {
+        System.out.println(message);
+
         new Thread(() -> {
             try {
                 playSound();
 
                 Notify.create()
                         .title("Papi Musk")
-                        .position(Pos.BOTTOM_LEFT)
+                        .position(Pos.TOP_LEFT)
                         .text(message)
                         .setScreen(1)
                         .image(ImageIO.read(new File("src/main/resources/musk.png")))
