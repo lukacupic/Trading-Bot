@@ -10,6 +10,11 @@ import javax.imageio.ImageIO;
 import javax.sound.sampled.*;
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
+import java.util.Locale;
 
 public class Util {
 
@@ -20,7 +25,10 @@ public class Util {
     }
 
     public static void showAlert(String message) {
-        System.out.println(message);
+        String currentTime = new SimpleDateFormat("HH:mm:ss").format(new Date());
+        String timedMessage = String.format("[%s] %s", currentTime, message);
+
+        System.out.println(timedMessage);
 
         new Thread(() -> {
             try {
@@ -29,7 +37,7 @@ public class Util {
                 Notify.create()
                         .title("Papi Musk")
                         .position(Pos.TOP_LEFT)
-                        .text(message)
+                        .text(timedMessage)
                         .setScreen(1)
                         .image(ImageIO.read(new File("src/main/resources/musk.png")))
                         .show();
@@ -44,6 +52,6 @@ public class Util {
         AudioInputStream audioIn = AudioSystem.getAudioInputStream(f.toURI().toURL());
         Clip clip = AudioSystem.getClip();
         clip.open(audioIn);
-        clip.loop(1);
+        clip.start();
     }
 }
