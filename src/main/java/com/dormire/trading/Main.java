@@ -2,7 +2,10 @@ package com.dormire.trading;
 
 import com.dormire.trading.utils.RuntimeUtil;
 
-public class StopDemo {
+/**
+ * Entry class for the 'Stonk' program.
+ */
+public class Main {
 
     private static final int WAIT_TIME = 5;
     private static final int LOOP_TIME = 1;
@@ -15,7 +18,12 @@ public class StopDemo {
     private static IOHandler io = new IOHandler();
     private static StonkDriver driver;
 
-    public static void main(String[] args) throws InterruptedException {
+    /**
+     * Starts the Stonk program.
+     *
+     * @param args command lines arguments; not used in this program
+     */
+    public static void main(String[] args) {
         do {
             ticker = io.getString("Please enter the stonk ticker");
         }
@@ -36,6 +44,9 @@ public class StopDemo {
         }
     }
 
+    /**
+     * Step 1 of the algorithm.
+     */
     private static void step1() {
         transactionPrice = io.getDouble("Please enter the buy price:");
         noStonks = io.getInteger("Please enter the number of stonks:");
@@ -45,7 +56,10 @@ public class StopDemo {
         checker.start();
     }
 
-    private static void step2() throws InterruptedException {
+    /**
+     * Step 2 of the algorithm.
+     */
+    private static void step2() {
         RuntimeUtil.wait(WAIT_TIME);
         RuntimeUtil.waitConditional(() -> driver.getCurrentPrice() > transactionPrice, LOOP_TIME);
 
@@ -53,6 +67,9 @@ public class StopDemo {
         io.showAlert(message);
     }
 
+    /**
+     * Step 3 of the algorithm.
+     */
     private static void step3() {
         do {
             io.showInputAlert("Please type 'OK' to confirm setting stop loss:");
@@ -60,7 +77,10 @@ public class StopDemo {
         while (!io.isInput("OK"));
     }
 
-    private static void step4() throws InterruptedException {
+    /**
+     * Step 4 of the algorithm.
+     */
+    private static void step4() {
         RuntimeUtil.waitConditional(() -> driver.getCurrentPrice() < transactionPrice, LOOP_TIME);
 
         io.showAlert("Stop loss has been activated");
@@ -69,13 +89,19 @@ public class StopDemo {
         RuntimeUtil.wait(WAIT_TIME);
     }
 
-    private static void step5() throws InterruptedException {
+    /**
+     * Step 5 of the algorithm.
+     */
+    private static void step5() {
         RuntimeUtil.waitConditional(() -> driver.getCurrentPrice() < transactionPrice, LOOP_TIME);
 
         String message = String.format("Please set stop buy at $%f for %d stonks\n", transactionPrice, noStonks);
         io.showAlert(message);
     }
 
+    /**
+     * Step 6 of the algorithm.
+     */
     private static void step6() {
         do {
             io.showInputAlert("Please type 'OK' to confirm setting stop buy:");
@@ -83,7 +109,10 @@ public class StopDemo {
         while (!io.isInput("OK"));
     }
 
-    private static void step7() throws InterruptedException {
+    /**
+     * Step 7 of the algorithm.
+     */
+    private static void step7() {
         RuntimeUtil.waitConditional(() -> driver.getCurrentPrice() > transactionPrice, LOOP_TIME);
 
         io.showAlert("Stop buy has been activated");
