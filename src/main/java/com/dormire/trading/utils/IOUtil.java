@@ -22,6 +22,9 @@ public class IOUtil {
             try {
                 playSound();
 
+                Notify.MOVE_DURATION = 0.45f;
+                Notify.MAIN_TEXT_FONT = "Source Code Pro BOLD 14";
+
                 Notify.create()
                         .title("Papi Musk")
                         .position(Pos.TOP_LEFT)

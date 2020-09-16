@@ -2,6 +2,8 @@ package com.dormire.trading;
 
 import com.dormire.trading.utils.RuntimeUtil;
 
+import java.util.function.Consumer;
+
 /**
  * Entry class for the 'Stonk' program.
  */
@@ -25,7 +27,7 @@ public class Main {
      */
     public static void main(String[] args) {
         do {
-            ticker = io.getString("Please enter the stonk ticker");
+            ticker = io.getString("Enter the stonk ticker");
         }
         while (!isAlphabetical(ticker));
 
@@ -52,8 +54,11 @@ public class Main {
         noStonks = io.getInteger("Please enter the number of stonks:");
         profitPercentage = io.getDouble("Please enter the wanted profit percentage:");
 
-        ProfitChecker checker = new ProfitChecker(driver, io, transactionPrice, profitPercentage);
-        checker.start();
+        ProfitChecker checker = new ProfitChecker(driver, transactionPrice, profitPercentage);
+        checker.notify(profit -> {
+            String message = String.format("Please set stop loss at $%.2f for %d stonks.", profit, noStonks);
+            io.showAlert(message);
+        });
     }
 
     /**
@@ -63,7 +68,7 @@ public class Main {
         RuntimeUtil.wait(WAIT_TIME);
         RuntimeUtil.waitConditional(() -> driver.getCurrentPrice() > transactionPrice, LOOP_TIME);
 
-        String message = String.format("Please set stop loss at $%f for %d stonks\n", transactionPrice, noStonks);
+        String message = String.format("Please set stop loss at $%.2f for %d stonks\n", transactionPrice, noStonks);
         io.showAlert(message);
     }
 
@@ -95,7 +100,7 @@ public class Main {
     private static void step5() {
         RuntimeUtil.waitConditional(() -> driver.getCurrentPrice() < transactionPrice, LOOP_TIME);
 
-        String message = String.format("Please set stop buy at $%f for %d stonks\n", transactionPrice, noStonks);
+        String message = String.format("Please set stop buy at $%.2f for %d stonks\n", transactionPrice, noStonks);
         io.showAlert(message);
     }
 
