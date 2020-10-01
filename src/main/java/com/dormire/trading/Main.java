@@ -2,8 +2,6 @@ package com.dormire.trading;
 
 import com.dormire.trading.utils.RuntimeUtil;
 
-import java.util.function.Consumer;
-
 /**
  * Entry class for the 'Stonk' program.
  */
@@ -11,6 +9,7 @@ public class Main {
 
     private static final int WAIT_TIME = 5;
     private static final int LOOP_TIME = 1;
+    private static final double BUFFER = 1.005;
 
     private static String ticker;
     private static double transactionPrice;
@@ -86,12 +85,18 @@ public class Main {
      * Step 4 of the algorithm.
      */
     private static void step4() {
-        RuntimeUtil.waitConditional(() -> driver.getCurrentPrice() < transactionPrice, LOOP_TIME);
+        RuntimeUtil.waitConditional(() -> driver.getCurrentPrice() < BUFFER * transactionPrice, LOOP_TIME);
 
-        io.showAlert("Stop loss has been activated");
-        transactionPrice = io.getDouble("Please enter sell fill price:");
+        String response = io.getString("Has the stop loss been activated? Type 'YES' or 'NO':");
 
-        RuntimeUtil.wait(WAIT_TIME);
+        if (response.equals("YES")) {
+            transactionPrice = io.getDouble("Please enter sell fill price:");
+            RuntimeUtil.wait(WAIT_TIME);
+
+        } else if (response.equals("NO")) {
+            RuntimeUtil.wait(60);
+            step4();
+        }
     }
 
     /**
@@ -118,10 +123,18 @@ public class Main {
      * Step 7 of the algorithm.
      */
     private static void step7() {
-        RuntimeUtil.waitConditional(() -> driver.getCurrentPrice() > transactionPrice, LOOP_TIME);
+        RuntimeUtil.waitConditional(() -> driver.getCurrentPrice() > (2 - BUFFER) * transactionPrice, LOOP_TIME);
 
-        io.showAlert("Stop buy has been activated");
-        transactionPrice = io.getDouble("Please enter buy fill price:");
+        String response = io.getString("Has the stop loss been activated? Type 'YES' or 'NO':");
+
+        if (response.equals("YES")) {
+            io.showAlert("Stop buy has been activated");
+            transactionPrice = io.getDouble("Please enter buy fill price:");
+
+        } else if (response.equals("NO")) {
+            RuntimeUtil.wait(60);
+            step7();
+        }
     }
 
     private static boolean isAlphabetical(String s) {
