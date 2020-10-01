@@ -1,5 +1,7 @@
 package com.dormire.trading;
 
+import com.dormire.trading.utils.PriceType;
+
 import java.util.function.Consumer;
 
 public class ProfitChecker extends Thread {
@@ -24,7 +26,7 @@ public class ProfitChecker extends Thread {
     public void run() {
         double profit = (1 + this.profitPercentage / 100) * transactionPrice;
         try {
-            while (!(this.driver.getCurrentPrice() >= profit)) {
+            while (!(this.driver.getCurrentPrice(PriceType.BUY) >= profit)) {
                 Thread.sleep(1000);
             }
         } catch (RuntimeException | InterruptedException ignorable) {
