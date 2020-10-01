@@ -1,5 +1,6 @@
 package com.dormire.trading;
 
+import com.dormire.trading.utils.PriceType;
 import com.dormire.trading.utils.RuntimeUtil;
 
 /**
@@ -65,7 +66,7 @@ public class Main {
      */
     private static void step2() {
         RuntimeUtil.wait(WAIT_TIME);
-        RuntimeUtil.waitConditional(() -> driver.getCurrentPrice() > transactionPrice, LOOP_TIME);
+        RuntimeUtil.waitConditional(() -> driver.getCurrentPrice(PriceType.SELL) > transactionPrice, LOOP_TIME);
 
         String message = String.format("Please set stop loss at $%.2f for %d stonks\n", transactionPrice, noStonks);
         io.showAlert(message);
@@ -85,7 +86,7 @@ public class Main {
      * Step 4 of the algorithm.
      */
     private static void step4() {
-        RuntimeUtil.waitConditional(() -> driver.getCurrentPrice() < BUFFER * transactionPrice, LOOP_TIME);
+        RuntimeUtil.waitConditional(() -> driver.getCurrentPrice(PriceType.SELL) < BUFFER * transactionPrice, LOOP_TIME);
 
         String response = io.getString("Has the stop loss been activated? Type 'YES' or 'NO':");
 
@@ -103,7 +104,7 @@ public class Main {
      * Step 5 of the algorithm.
      */
     private static void step5() {
-        RuntimeUtil.waitConditional(() -> driver.getCurrentPrice() < transactionPrice, LOOP_TIME);
+        RuntimeUtil.waitConditional(() -> driver.getCurrentPrice(PriceType.BUY) < transactionPrice, LOOP_TIME);
 
         String message = String.format("Please set stop buy at $%.2f for %d stonks\n", transactionPrice, noStonks);
         io.showAlert(message);
@@ -123,9 +124,9 @@ public class Main {
      * Step 7 of the algorithm.
      */
     private static void step7() {
-        RuntimeUtil.waitConditional(() -> driver.getCurrentPrice() > (2 - BUFFER) * transactionPrice, LOOP_TIME);
+        RuntimeUtil.waitConditional(() -> driver.getCurrentPrice(PriceType.BUY) > (2 - BUFFER) * transactionPrice, LOOP_TIME);
 
-        String response = io.getString("Has the stop loss been activated? Type 'YES' or 'NO':");
+        String response = io.getString("Has the stop buy been activated? Type 'YES' or 'NO':");
 
         if (response.equals("YES")) {
             io.showAlert("Stop buy has been activated");
