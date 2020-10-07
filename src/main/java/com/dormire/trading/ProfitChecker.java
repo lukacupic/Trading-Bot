@@ -24,9 +24,9 @@ public class ProfitChecker extends Thread {
 
     @Override
     public void run() {
-        double profit = (1 + this.profitPercentage / 100) * transactionPrice;
+        double profit = (1 + profitPercentage / 100) * transactionPrice;
         try {
-            while (!(this.driver.getCurrentPrice(PriceType.BUY) >= profit)) {
+            while (!(driver.getCurrentPrice(PriceType.BUY) >= profit)) {
                 Thread.sleep(1000);
             }
         } catch (RuntimeException | InterruptedException ignorable) {

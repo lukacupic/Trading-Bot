@@ -1,40 +1,24 @@
 package com.dormire.trading;
 
-import com.dormire.trading.utils.IOUtil;
 import com.dormire.trading.utils.PriceType;
 import com.dormire.trading.utils.RuntimeUtil;
 
-/**
- * Entry class for the 'Stonk' program.
- */
-public class Main {
+public class StonkTrader {
 
-    private static final int WAIT_TIME = 5;
-    private static final int LOOP_TIME = 1;
-    private static final int ONE_MINUTE = 60;
-    private static final double BUFFER = 1.005;
+    private static final int LOOP_TIME = 1; /* in seconds */
+    private static final int WAIT_TIME = 5; /* in seconds */
+    private static final double BUFFER_PERCENTAGE = 0.5;
 
-    private static double transactionPrice;
-    private static int noStonks;
+    private StonkDriver driver;
+    private IOHandler io;
+    private double transactionPrice;
+    private int noStonks;
 
-    private static IOHandler io = new IOHandler();
-    private static StonkDriver driver;
+    public StonkTrader(IOHandler io) {
+        this.io = io;
+    }
 
-    /**
-     * Starts the Stonk program.
-     *
-     * @param args command lines arguments; not used in this program
-     */
-    public static void main(String[] args) {
-        String ticker;
-        do {
-            ticker = io.getString("Enter the stonk ticker");
-        }
-        while (!IOUtil.isAlphabetical(ticker));
-
-        String url = String.format("https://www.tradingview.com/chart/?symbol=%s", ticker);
-        driver = new StonkDriver(url);
-
+    public void start() {
         step1();
 
         while (true) {
@@ -50,7 +34,11 @@ public class Main {
     /**
      * Step 1 of the algorithm.
      */
-    private static void step1() {
+    private void step1() {
+        String ticker = io.getString("Enter the stonk ticker");
+        String url = String.format("https://www.tradingview.com/chart/?symbol=%s", ticker);
+        driver = new StonkDriver(url);
+
         transactionPrice = io.getDouble("Please enter the buy price:");
         noStonks = io.getInteger("Please enter the number of stonks:");
 
@@ -66,7 +54,7 @@ public class Main {
     /**
      * Step 2 of the algorithm.
      */
-    private static void step2() {
+    private void step2() {
         RuntimeUtil.sleep(WAIT_TIME);
 
         while (!(driver.getCurrentPrice(PriceType.SELL) > transactionPrice)) {
@@ -80,7 +68,7 @@ public class Main {
     /**
      * Step 3 of the algorithm.
      */
-    private static void step3() {
+    private void step3() {
         do {
             io.showInputAlert("Please type 'OK' to confirm setting stop loss:");
         }
@@ -90,8 +78,8 @@ public class Main {
     /**
      * Step 4 of the algorithm.
      */
-    private static void step4() {
-        while (!(driver.getCurrentPrice(PriceType.SELL) < BUFFER * transactionPrice)) {
+    private void step4() {
+        while (!(driver.getCurrentPrice(PriceType.SELL) < BUFFER_PERCENTAGE * transactionPrice)) {
             RuntimeUtil.sleep(LOOP_TIME);
         }
 
@@ -102,7 +90,7 @@ public class Main {
             RuntimeUtil.sleep(WAIT_TIME);
 
         } else if (response.equals("NO")) {
-            RuntimeUtil.sleep(ONE_MINUTE);
+            RuntimeUtil.sleep(60);
             step4();
         }
     }
@@ -110,7 +98,7 @@ public class Main {
     /**
      * Step 5 of the algorithm.
      */
-    private static void step5() {
+    private void step5() {
         while (!(driver.getCurrentPrice(PriceType.BUY) < transactionPrice)) {
             RuntimeUtil.sleep(LOOP_TIME);
         }
@@ -122,7 +110,7 @@ public class Main {
     /**
      * Step 6 of the algorithm.
      */
-    private static void step6() {
+    private void step6() {
         do {
             io.showInputAlert("Please type 'OK' to confirm setting stop buy:");
         }
@@ -132,8 +120,8 @@ public class Main {
     /**
      * Step 7 of the algorithm.
      */
-    private static void step7() {
-        while (!(driver.getCurrentPrice(PriceType.BUY) > (2 - BUFFER) * transactionPrice)) {
+    private void step7() {
+        while (!(driver.getCurrentPrice(PriceType.BUY) > (2 - BUFFER_PERCENTAGE) * transactionPrice)) {
             RuntimeUtil.sleep(LOOP_TIME);
         }
 
@@ -147,5 +135,17 @@ public class Main {
             RuntimeUtil.sleep(60);
             step7();
         }
+    }
+
+    /**
+     * Starts the stonk trader program.
+     *
+     * @param args command lines arguments; not used in this program
+     */
+    public static void main(String[] args) {
+        IOHandler io = new IOHandler();
+
+        StonkTrader trader = new StonkTrader(io);
+        trader.start();
     }
 }
