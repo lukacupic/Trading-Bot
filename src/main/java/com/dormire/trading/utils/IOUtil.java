@@ -53,4 +53,8 @@ public class IOUtil {
             throw new IOException(ex);
         }
     }
+
+    public static boolean isAlphabetical(String s) {
+        return s != null && s.matches("^[a-zA-Z]*$");
+    }
 }

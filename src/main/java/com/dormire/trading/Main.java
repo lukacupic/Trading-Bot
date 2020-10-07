@@ -1,5 +1,6 @@
 package com.dormire.trading;
 
+import com.dormire.trading.utils.IOUtil;
 import com.dormire.trading.utils.PriceType;
 import com.dormire.trading.utils.RuntimeUtil;
 
@@ -10,11 +11,10 @@ public class Main {
 
     private static final int WAIT_TIME = 5;
     private static final int LOOP_TIME = 1;
+    private static final int ONE_MINUTE = 60;
     private static final double BUFFER = 1.005;
 
-    private static String ticker;
     private static double transactionPrice;
-    private static double profitPercentage;
     private static int noStonks;
 
     private static IOHandler io = new IOHandler();
@@ -26,10 +26,11 @@ public class Main {
      * @param args command lines arguments; not used in this program
      */
     public static void main(String[] args) {
+        String ticker;
         do {
             ticker = io.getString("Enter the stonk ticker");
         }
-        while (!isAlphabetical(ticker));
+        while (!IOUtil.isAlphabetical(ticker));
 
         String url = String.format("https://www.tradingview.com/chart/?symbol=%s", ticker);
         driver = new StonkDriver(url);
@@ -52,7 +53,8 @@ public class Main {
     private static void step1() {
         transactionPrice = io.getDouble("Please enter the buy price:");
         noStonks = io.getInteger("Please enter the number of stonks:");
-        profitPercentage = io.getDouble("Please enter the wanted profit percentage:");
+
+        double profitPercentage = io.getDouble("Please enter the wanted profit percentage:");
 
         ProfitChecker checker = new ProfitChecker(driver, transactionPrice, profitPercentage);
         checker.notify(profit -> {
@@ -65,8 +67,11 @@ public class Main {
      * Step 2 of the algorithm.
      */
     private static void step2() {
-        RuntimeUtil.wait(WAIT_TIME);
-        RuntimeUtil.waitConditional(() -> driver.getCurrentPrice(PriceType.SELL) > transactionPrice, LOOP_TIME);
+        RuntimeUtil.sleep(WAIT_TIME);
+
+        while (!(driver.getCurrentPrice(PriceType.SELL) > transactionPrice)) {
+            RuntimeUtil.sleep(1);
+        }
 
         String message = String.format("Please set stop loss at $%.2f for %d stonks\n", transactionPrice, noStonks);
         io.showAlert(message);
@@ -86,16 +91,18 @@ public class Main {
      * Step 4 of the algorithm.
      */
     private static void step4() {
-        RuntimeUtil.waitConditional(() -> driver.getCurrentPrice(PriceType.SELL) < BUFFER * transactionPrice, LOOP_TIME);
+        while (!(driver.getCurrentPrice(PriceType.SELL) < BUFFER * transactionPrice)) {
+            RuntimeUtil.sleep(LOOP_TIME);
+        }
 
         String response = io.getString("Has the stop loss been activated? Type 'YES' or 'NO':");
 
         if (response.equals("YES")) {
             transactionPrice = io.getDouble("Please enter sell fill price:");
-            RuntimeUtil.wait(WAIT_TIME);
+            RuntimeUtil.sleep(WAIT_TIME);
 
         } else if (response.equals("NO")) {
-            RuntimeUtil.wait(60);
+            RuntimeUtil.sleep(ONE_MINUTE);
             step4();
         }
     }
@@ -104,7 +111,9 @@ public class Main {
      * Step 5 of the algorithm.
      */
     private static void step5() {
-        RuntimeUtil.waitConditional(() -> driver.getCurrentPrice(PriceType.BUY) < transactionPrice, LOOP_TIME);
+        while (!(driver.getCurrentPrice(PriceType.BUY) < transactionPrice)) {
+            RuntimeUtil.sleep(LOOP_TIME);
+        }
 
         String message = String.format("Please set stop buy at $%.2f for %d stonks\n", transactionPrice, noStonks);
         io.showAlert(message);
@@ -124,7 +133,9 @@ public class Main {
      * Step 7 of the algorithm.
      */
     private static void step7() {
-        RuntimeUtil.waitConditional(() -> driver.getCurrentPrice(PriceType.BUY) > (2 - BUFFER) * transactionPrice, LOOP_TIME);
+        while (!(driver.getCurrentPrice(PriceType.BUY) > (2 - BUFFER) * transactionPrice)) {
+            RuntimeUtil.sleep(LOOP_TIME);
+        }
 
         String response = io.getString("Has the stop buy been activated? Type 'YES' or 'NO':");
 
@@ -133,12 +144,8 @@ public class Main {
             transactionPrice = io.getDouble("Please enter buy fill price:");
 
         } else if (response.equals("NO")) {
-            RuntimeUtil.wait(60);
+            RuntimeUtil.sleep(60);
             step7();
         }
-    }
-
-    private static boolean isAlphabetical(String s) {
-        return s != null && s.matches("^[a-zA-Z]*$");
     }
 }
