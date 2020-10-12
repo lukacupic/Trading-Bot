@@ -105,7 +105,7 @@ public class MainController {
     }
 
     public void addInstrument(Instrument instrument) {
-        updateMainLabel("Loading browser emulator, please wait...");
+        updateMainLabel("Loading, please wait...");
         createHBox(instrument);
         createRingManager(instrument);
     }
@@ -113,6 +113,7 @@ public class MainController {
     private void createRingManager(Instrument instrument) {
         RingManager manager = new RingManager(instrument);
         manager.start();
+        ringView.setVisible(true);
     }
 
     private void createHBox(Instrument instrument) {

@@ -1,20 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import com.jfoenix.controls.JFXButton?>
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.StackPane?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Font?>
+<?import com.jfoenix.controls.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-<VBox fx:id="rootElement" alignment="CENTER" prefHeight="800.0" prefWidth="1200.0"
-      style="-fx-background-color: #141414;" xmlns="http://javafx.com/javafx/11.0.1"
-      xmlns:fx="http://javafx.com/fxml/1">
+<VBox fx:id="rootElement" alignment="CENTER" prefHeight="800.0" prefWidth="1200.0" style="-fx-background-color: #141414;" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1">
     <children>
         <BorderPane minHeight="100.0" prefHeight="100.0" style="-fx-background-color: #141414;" VBox.vgrow="NEVER">
             <left>
@@ -22,22 +15,22 @@
                     <children>
                         <Label alignment="BOTTOM_CENTER" contentDisplay="CENTER" text="Stonk Demo" textFill="#d6d6d6">
                             <font>
-                                <Font name="System Bold" size="28.0"/>
+                                <Font name="System Bold" size="28.0" />
                             </font>
                             <BorderPane.margin>
-                                <Insets/>
+                                <Insets />
                             </BorderPane.margin>
                         </Label>
                     </children>
                     <BorderPane.margin>
-                        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
+                        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
                     </BorderPane.margin>
                 </HBox>
             </left>
             <center>
                 <HBox BorderPane.alignment="CENTER">
                     <BorderPane.margin>
-                        <Insets/>
+                        <Insets />
                     </BorderPane.margin>
                 </HBox>
             </center>
@@ -46,12 +39,12 @@
                     <children>
                         <JFXButton fx:id="settingsButton" text="Settings" textFill="#d6d6d6">
                             <font>
-                                <Font size="14.0"/>
+                                <Font size="14.0" />
                             </font>
                         </JFXButton>
                     </children>
                     <BorderPane.margin>
-                        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
+                        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
                     </BorderPane.margin>
                 </HBox>
             </right>
@@ -60,23 +53,21 @@
             <children>
                 <VBox alignment="TOP_CENTER">
                     <children>
-                        <ScrollPane fitToWidth="true" style="-fx-background: #2d2c2d;"
-                                    stylesheets="@../stylesheets/main.css" VBox.vgrow="ALWAYS">
+                        <ScrollPane fitToWidth="true" style="-fx-background: #2d2c2d;" stylesheets="@../stylesheets/main.css" VBox.vgrow="ALWAYS">
                             <content>
-                                <VBox fx:id="instrumentPane" alignment="CENTER"/>
+                                <VBox fx:id="instrumentPane" alignment="CENTER" />
                             </content>
                         </ScrollPane>
                         <StackPane style="-fx-background-color: #2d2c2d;">
                             <children>
-                                <JFXButton fx:id="addButton" alignment="CENTER" contentDisplay="CENTER" text="+"
-                                           textAlignment="CENTER" textFill="WHITE">
+                                <JFXButton fx:id="addButton" alignment="CENTER" contentDisplay="CENTER" text="+" textAlignment="CENTER" textFill="WHITE">
                                     <font>
-                                        <Font size="30.0"/>
+                                        <Font size="30.0" />
                                     </font>
                                 </JFXButton>
                             </children>
                             <padding>
-                                <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
+                                <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
                             </padding>
                         </StackPane>
                     </children>
@@ -85,23 +76,21 @@
                     <center>
                         <StackPane prefHeight="150.0" prefWidth="200.0">
                             <children>
-                                <ImageView fx:id="ringView" fitHeight="350.0" fitWidth="350.0" pickOnBounds="true"
-                                           preserveRatio="true">
+                                <ImageView fx:id="ringView" fitHeight="350.0" fitWidth="350.0" pickOnBounds="true" preserveRatio="true" visible="false">
                                     <image>
-                                        <Image url="@../images/ring.png"/>
+                                        <Image url="@../images/ring.png" />
                                     </image>
                                 </ImageView>
-                                <VBox alignment="CENTER">
+                                <VBox alignment="CENTER" spacing="10.0">
                                     <children>
                                         <Label fx:id="stepLabel" alignment="CENTER" textFill="#d6d6d6">
                                             <font>
-                                                <Font size="18.0"/>
+                                                <Font size="18.0" />
                                             </font>
                                         </Label>
-                                        <Label fx:id="mainLabel" alignment="CENTER" text="Click + to add an instrument"
-                                               textFill="#d6d6d6">
+                                        <Label fx:id="mainLabel" alignment="CENTER" text="Click + to add an instrument" textFill="#d6d6d6">
                                             <font>
-                                                <Font size="18.0"/>
+                                                <Font size="18.0" />
                                             </font>
                                         </Label>
                                     </children>

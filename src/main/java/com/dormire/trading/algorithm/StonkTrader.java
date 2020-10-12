@@ -49,7 +49,7 @@ public class StonkTrader {
         ProfitChecker checker = new ProfitChecker(driver, transactionPrice, profitPercentage);
         checker.notify(profit -> {
             Platform.runLater(() -> {
-                String message = String.format("Your profit goal has been reached!" +
+                String message = String.format("Your profit goal has been reached!\n" +
                         "Set stop loss at $%.2f for %f stonks.", profit, noStonks);
                 manager.showOkAlert(message);
             });

@@ -24,10 +24,8 @@ public class PromptScene {
         Parent root = loader.load();
 
         Stage stage = new Stage();
-        stage.setTitle("Instrument Prompt");
-        stage.setOnHiding(windowEvent -> {
-            mainScene.getRoot().setEffect(null);
-        });
+        stage.setTitle("Instrument Chooser");
+        stage.setOnHiding(windowEvent -> mainScene.getRoot().setEffect(null));
         Scene scene = new Scene(root, 600, 400);
         stage.setScene(scene);
 
