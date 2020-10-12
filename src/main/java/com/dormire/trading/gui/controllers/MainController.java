@@ -5,6 +5,8 @@ import com.dormire.trading.gui.scenes.PromptScene;
 import com.dormire.trading.gui.RingManager;
 import com.jfoenix.controls.JFXButton;
 import javafx.beans.binding.Bindings;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
@@ -15,6 +17,8 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -36,6 +40,9 @@ public class MainController {
 
     @FXML
     private Label mainLabel;
+
+    @FXML
+    private ImageView ringView;
 
     private Color focusColor = Color.rgb(31, 31, 31);
     private Color unfocusColor = Color.rgb(45, 44, 45);
@@ -66,6 +73,33 @@ public class MainController {
                 new PromptScene(mainScene);
             } catch (IOException e) {
                 e.printStackTrace();
+            }
+        });
+
+        double ringSize = 350;
+        ringView.setFitWidth(ringSize);
+        ringView.setFitHeight(ringSize);
+
+        bindLabelFontSize(stepLabel, 0.8 * ringSize, 18);
+        bindLabelFontSize(mainLabel, 0.8 * ringSize, 18);
+    }
+
+    private void bindLabelFontSize(Label label, double ringSize, double defaultFontSize) {
+        Font defaultFont = Font.font(defaultFontSize);
+
+        label.textProperty().addListener((observable, oldValue, newValue) -> {
+            Text tempText = new Text(newValue);
+            tempText.setFont(defaultFont);
+
+            double textWidth = tempText.getLayoutBounds().getWidth();
+            System.out.println(label + " " + textWidth);
+
+            if (textWidth <= ringSize) {
+                label.setFont(defaultFont);
+
+            } else {
+                double newFontSize = defaultFontSize * ringSize / textWidth;
+                label.setFont(Font.font(defaultFont.getFamily(), newFontSize));
             }
         });
     }
