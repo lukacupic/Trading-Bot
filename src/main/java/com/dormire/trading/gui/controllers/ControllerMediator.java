@@ -1,4 +1,4 @@
-package com.dormire.trading.gui.controller;
+package com.dormire.trading.gui.controllers;
 
 public class ControllerMediator {
 

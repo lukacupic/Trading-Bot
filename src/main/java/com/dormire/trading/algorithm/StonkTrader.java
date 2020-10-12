@@ -1,5 +1,6 @@
 package com.dormire.trading.algorithm;
 
+import com.dormire.trading.algorithm.utils.PriceType;
 import com.dormire.trading.algorithm.utils.RuntimeUtil;
 import com.dormire.trading.gui.RingManager;
 import javafx.application.Platform;
@@ -31,51 +32,48 @@ public class StonkTrader {
     }
 
     public void start() throws InterruptedException {
-        step1();
+        init();
 
         while (true) {
+            step1();
             step2();
             step3();
             step4();
-            step5();
-            step6();
-            step7();
         }
     }
 
-    /**
-     * Step 1 of the algorithm.
-     */
-    private void step1() {
+    private void init() {
         String url = String.format("https://www.tradingview.com/chart/?symbol=%s", ticker);
         driver = new StonkDriver(url);
-        manager.setCurrentStep(1);
 
         ProfitChecker checker = new ProfitChecker(driver, transactionPrice, profitPercentage);
         checker.notify(profit -> {
-            String message = String.format("Please set stop loss at $%.2f for %f stonks.", profit, noStonks);
             Platform.runLater(() -> {
-                manager.showMessage(message);
+                String message = String.format("Your profit goal has been reached!" +
+                        "Set stop loss at $%.2f for %f stonks.", profit, noStonks);
+                manager.showOkAlert(message);
             });
         });
         checker.start();
     }
 
-    /**
-     * Step 2 of the algorithm.
-     */
-    private void step2() throws InterruptedException {
+    private void step1() throws InterruptedException {
+        Platform.runLater(() -> {
+            manager.setCurrentStep(1);
+            manager.setMessage("Waiting for price > %.2f && timer > 5 min...", transactionPrice);
+        });
+
         RuntimeUtil.sleep(WAIT_TIME);
 
-//        while (!(driver.getCurrentPrice(PriceType.SELL) > transactionPrice)) {
-//            RuntimeUtil.sleep(1);
-//        }
+        while (!(driver.getCurrentPrice(PriceType.SELL) > transactionPrice)) {
+            RuntimeUtil.sleep(1);
+        }
 
-        String message = String.format("Please set stop loss at $%.2f for %f stonks\n", transactionPrice, noStonks);
+        manager.showNotification("Set stop loss for %s at $%.2f for %f stonks.", ticker, transactionPrice, noStonks);
+
         Platform.runLater(() -> {
             try {
-                manager.setCurrentStep(2);
-                manager.showMessage(message);
+                manager.showOkAlert("Set stop loss at $%.2f for %f stonks.", transactionPrice, noStonks);
                 queue.put("");
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -84,33 +82,20 @@ public class StonkTrader {
         queue.take();
     }
 
-    /**
-     * Step 3 of the algorithm.
-     */
-    private void step3() throws InterruptedException {
+    private void step2() throws InterruptedException {
         Platform.runLater(() -> {
-            try {
-                manager.setCurrentStep(3);
-                manager.showOkAlert("Please click 'OK' to confirm setting stop loss");
-                queue.put("");
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            manager.setCurrentStep(2);
+            manager.setMessage("Waiting for price <= %.2f...", transactionPrice);
         });
-        queue.take();
-    }
 
-    /**
-     * Step 4 of the algorithm.
-     */
-    private void step4() throws InterruptedException {
-//        while (!(driver.getCurrentPrice(PriceType.SELL) < BUFFER_PERCENTAGE * transactionPrice)) {
-//            RuntimeUtil.sleep(LOOP_TIME);
-//        }
+        while (!(driver.getCurrentPrice(PriceType.SELL) <= BUFFER_PERCENTAGE * transactionPrice)) {
+            RuntimeUtil.sleep(LOOP_TIME);
+        }
+
+        manager.showNotification("Has the stop loss been activated?");
 
         Platform.runLater(() -> {
             try {
-                manager.setCurrentStep(4);
                 String response = manager.showYesNoAlert("Has the stop loss been activated?");
                 queue.put(response);
             } catch (InterruptedException e) {
@@ -123,8 +108,7 @@ public class StonkTrader {
         if (response.equals("YES")) {
             Platform.runLater(() -> {
                 try {
-                    manager.setCurrentStep(5);
-                    String fillPrice = manager.showInputDialog("Please enter sell fill price");
+                    String fillPrice = manager.showInputDialog("Please enter sell fill price.");
                     queue.put(fillPrice);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -135,32 +119,27 @@ public class StonkTrader {
 
         } else if (response.equals("NO")) {
             RuntimeUtil.sleep(60);
-            step4();
+            step2();
         }
     }
 
-    /**
-     * Step 5 of the algorithm.
-     */
-    private void step5() {
-//        while (!(driver.getCurrentPrice(PriceType.BUY) < transactionPrice)) {
-//            RuntimeUtil.sleep(LOOP_TIME);
-//        }
+    private void step3() throws InterruptedException {
+        Platform.runLater(() -> {
+            manager.setCurrentStep(3);
+            manager.setMessage("Waiting for price < %.2f && timer > 5 min...", transactionPrice);
+        });
 
-        manager.setCurrentStep(5);
-    }
+        RuntimeUtil.sleep(WAIT_TIME);
 
-    /**
-     * Step 6 of the algorithm.
-     */
-    private void step6() throws InterruptedException {
-        String message = String.format("Please set stop buy at $%.2f for %f stonks\n" +
-                "Click 'OK' to confirm setting stop buy.", transactionPrice, noStonks);
+        while (!(driver.getCurrentPrice(PriceType.BUY) < transactionPrice)) {
+            RuntimeUtil.sleep(LOOP_TIME);
+        }
+
+        manager.showNotification("Set stop buy for %s at $%.2f for %f stonks.", ticker, transactionPrice, noStonks);
 
         Platform.runLater(() -> {
             try {
-                manager.setCurrentStep(6);
-                manager.showOkAlert(message);
+                manager.showOkAlert("Set stop buy at $%.2f for %f stonks.", transactionPrice, noStonks);
                 queue.put("");
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -169,17 +148,20 @@ public class StonkTrader {
         queue.take();
     }
 
-    /**
-     * Step 7 of the algorithm.
-     */
-    private void step7() throws InterruptedException {
-//        while (!(driver.getCurrentPrice(PriceType.BUY) > (2 - BUFFER_PERCENTAGE) * transactionPrice)) {
-//            RuntimeUtil.sleep(LOOP_TIME);
-//        }
+    private void step4() throws InterruptedException {
+        Platform.runLater(() -> {
+            manager.setCurrentStep(4);
+            manager.setMessage("Waiting for price >= %.2f...", transactionPrice);
+        });
+
+        while (!(driver.getCurrentPrice(PriceType.BUY) >= (2 - BUFFER_PERCENTAGE) * transactionPrice)) {
+            RuntimeUtil.sleep(LOOP_TIME);
+        }
+
+        manager.showNotification("Has the stop buy been activated?");
 
         Platform.runLater(() -> {
             try {
-                manager.setCurrentStep(7);
                 String response = manager.showYesNoAlert("Has the stop buy been activated?");
                 queue.put(response);
             } catch (InterruptedException e) {
@@ -192,7 +174,7 @@ public class StonkTrader {
         if (response.equals("YES")) {
             Platform.runLater(() -> {
                 try {
-                    String fillPrice = manager.showInputDialog("Stop buy has been activated. Please enter buy fill price");
+                    String fillPrice = manager.showInputDialog("Please enter buy fill price.");
                     queue.put(fillPrice);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -202,7 +184,7 @@ public class StonkTrader {
 
         } else if (response.equals("NO")) {
             RuntimeUtil.sleep(60);
-            step7();
+            step4();
         }
     }
 }

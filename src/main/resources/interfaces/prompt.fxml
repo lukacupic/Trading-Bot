@@ -22,7 +22,7 @@
                                         <Font size="18.0" />
                                     </font>
                                 </JFXButton>
-                                <JFXComboBox fx:id="instrumentBox" focusColor="WHITE" unFocusColor="WHITE" />
+                        <JFXComboBox fx:id="instrumentBox" editable="true" stylesheets="@../stylesheets/prompt.css" />
                             </children>
                         </HBox>
                         <HBox alignment="CENTER" layoutX="10.0" layoutY="10.0">
@@ -32,7 +32,7 @@
                                         <Font size="18.0" />
                                     </font>
                                 </JFXButton>
-                                <JFXTextField fx:id="stonkPrice" focusColor="WHITE" text="420" unFocusColor="WHITE" />
+                                <JFXTextField fx:id="stonkPrice" focusColor="WHITE" stylesheets="@../stylesheets/prompt.css" text="420" unFocusColor="WHITE" />
                             </children>
                         </HBox>
                         <HBox alignment="CENTER">
@@ -42,7 +42,7 @@
                                         <Font size="18.0" />
                                     </font>
                                 </JFXButton>
-                                <JFXTextField fx:id="noStonks" text="1" />
+                                <JFXTextField fx:id="noStonks" stylesheets="@../stylesheets/prompt.css" text="1" />
                             </children>
                         </HBox>
                         <HBox alignment="CENTER" layoutX="10.0" layoutY="214.0">
@@ -52,7 +52,7 @@
                                         <Font size="18.0" />
                                     </font>
                                 </JFXButton>
-                                <JFXTextField fx:id="stonkPercentage" text="1.2" />
+                                <JFXTextField fx:id="stonkPercentage" stylesheets="@../stylesheets/prompt.css" text="1.2" />
                             </children>
                         </HBox>
                   <HBox alignment="CENTER" layoutX="10.0" layoutY="284.0">
@@ -62,7 +62,7 @@
                               <Font size="18.0" />
                            </font>
                         </JFXButton>
-                        <JFXTextField fx:id="stonkPercentage111" text="1.001" />
+                        <JFXTextField fx:id="stonkPercentage111" stylesheets="@../stylesheets/prompt.css" text="1.001" />
                      </children>
                   </HBox>
                   <HBox alignment="CENTER" layoutX="10.0" layoutY="237.0">
@@ -72,7 +72,7 @@
                               <Font size="18.0" />
                            </font>
                         </JFXButton>
-                        <JFXTextField fx:id="stonkPercentage1" text="5" />
+                        <JFXTextField fx:id="stonkPercentage1" stylesheets="@../stylesheets/prompt.css" text="5" />
                      </children>
                   </HBox>
                   <HBox alignment="CENTER" layoutX="10.0" layoutY="261.0">
@@ -82,7 +82,7 @@
                               <Font size="18.0" />
                            </font>
                         </JFXButton>
-                        <JFXTextField fx:id="stonkPercentage11" text="1" />
+                        <JFXTextField fx:id="stonkPercentage11" stylesheets="@../stylesheets/prompt.css" text="1" />
                      </children>
                   </HBox>
                     </children>

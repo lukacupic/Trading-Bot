@@ -1,10 +1,9 @@
-package com.dormire.trading.gui.controller;
+package com.dormire.trading.gui.controllers;
 
 import com.dormire.trading.gui.Instrument;
-import com.dormire.trading.gui.PromptScene;
+import com.dormire.trading.gui.scenes.PromptScene;
 import com.dormire.trading.gui.RingManager;
 import com.jfoenix.controls.JFXButton;
-import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -57,7 +56,7 @@ public class MainController {
         instrumentPane.getChildren().add(home);
 
         ImageView imageView = (ImageView) home.getChildren().get(0);
-        InputStream homeStream = getClass().getResourceAsStream("/home.png");
+        InputStream homeStream = getClass().getResourceAsStream("/images/home.png");
         imageView.setImage(new Image(homeStream));
         imageView.setFitWidth(50);
 
@@ -106,7 +105,7 @@ public class MainController {
 
     private HBox loadInstrument() {
         try {
-            return FXMLLoader.load(getClass().getResource("/instrument.fxml"));
+            return FXMLLoader.load(getClass().getResource("/interfaces/instrument.fxml"));
         } catch (IOException e) {
             throw new RuntimeException();
         }

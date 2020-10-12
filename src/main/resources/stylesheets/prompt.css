@@ -1,0 +1,7 @@
+.text-input {
+    -fx-text-fill: #d6d6d6;
+}
+
+.combo-box .cell:selected {
+    -fx-text-fill: #d6d6d6;
+}

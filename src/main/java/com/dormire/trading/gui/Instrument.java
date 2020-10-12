@@ -1,5 +1,7 @@
 package com.dormire.trading.gui;
 
+import com.dormire.trading.util.UserInputUtil;
+
 public class Instrument {
 
     private String ticker;
@@ -8,10 +10,10 @@ public class Instrument {
     private double percentage;
 
     public Instrument(String ticker, String price, String noStonks, String percentage) {
-        this.ticker = ticker.toUpperCase();
-        this.price = Double.parseDouble(price);
-        this.noStonks = Double.parseDouble(noStonks);
-        this.percentage = Double.parseDouble(percentage);
+        this.ticker = UserInputUtil.prepareString(ticker);
+        this.price = UserInputUtil.prepareNumber(price);
+        this.noStonks = UserInputUtil.prepareNumber(noStonks);
+        this.percentage = UserInputUtil.prepareNumber(percentage);
     }
 
     public String getTicker() {

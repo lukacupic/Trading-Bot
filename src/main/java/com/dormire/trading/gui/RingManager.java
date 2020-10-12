@@ -1,8 +1,9 @@
 package com.dormire.trading.gui;
 
 import com.dormire.trading.algorithm.StonkTrader;
-import com.dormire.trading.gui.controller.ControllerMediator;
-import com.dormire.trading.gui.controller.MainController;
+import com.dormire.trading.gui.controllers.ControllerMediator;
+import com.dormire.trading.gui.controllers.MainController;
+import com.dormire.trading.util.NotifcationUtil;
 
 public class RingManager {
 
@@ -28,34 +29,29 @@ public class RingManager {
         }).start();
     }
 
-    /**
-     * Displays an OK alert to the user and returns the user's clicked response.
-     * The method guarantees that the provided response will always be uppercase.
-     *
-     * @param text the text to display to the user
-     * @return the user's reply, i.e. "OK"
-     */
-    public String showOkAlert(String text) {
-        return mainController.showAlert(text, "OK").toUpperCase();
+    public String showOkAlert(String format, Object... arguments) {
+        String message = String.format(format, arguments);
+        return mainController.showAlert(message, "OK").toUpperCase();
     }
 
-    /**
-     * Displays the alert to the user and returns the user's clicked response.
-     * The method guarantees that the provided response will always be uppercase.
-     *
-     * @param text the text to display to the user
-     * @return the user's reply, i.e. "YES" or "NO"
-     */
-    public String showYesNoAlert(String text) {
-        return mainController.showAlert(text, "YES", "NO").toUpperCase();
+    public String showYesNoAlert(String format, Object... arguments) {
+        String message = String.format(format, arguments);
+        return mainController.showAlert(message, "YES", "NO").toUpperCase();
     }
 
-    public String showInputDialog(String text) {
-        return mainController.showInputDialog(text).toUpperCase();
+    public String showInputDialog(String format, Object... arguments) {
+        String message = String.format(format, arguments);
+        return mainController.showInputDialog(message).toUpperCase();
     }
 
-    public void showMessage(String text) {
-        mainController.updateMainLabel(text);
+    public void setMessage(String format, Object... arguments) {
+        String message = String.format(format, arguments);
+        mainController.updateMainLabel(message);
+    }
+
+    public void showNotification(String format, Object... arguments) {
+        String message = String.format(format, arguments);
+        NotifcationUtil.showNotification(message);
     }
 
     public void setCurrentStep(int step) {

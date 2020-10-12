@@ -1,6 +1,6 @@
-package com.dormire.trading.gui;
+package com.dormire.trading.gui.scenes;
 
-import com.dormire.trading.gui.controller.PromptController;
+import com.dormire.trading.gui.controllers.PromptController;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -16,7 +16,7 @@ public class PromptScene {
     private static Effect blur = new GaussianBlur(15);
 
     public PromptScene(Scene mainScene) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/prompt.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/interfaces/prompt.fxml"));
 
         PromptController controller = new PromptController(mainScene);
         loader.setController(controller);

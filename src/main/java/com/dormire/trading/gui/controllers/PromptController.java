@@ -1,4 +1,4 @@
-package com.dormire.trading.gui.controller;
+package com.dormire.trading.gui.controllers;
 
 import com.dormire.trading.gui.Instrument;
 import com.jfoenix.controls.JFXButton;
@@ -36,7 +36,7 @@ public class PromptController {
     public void initialize() {
         ControllerMediator.getInstance().setPromptController(this);
 
-        instrumentBox.getItems().addAll("AAPL", "TSLA", "GOOG", "NVDA");
+        instrumentBox.getItems().addAll("AAPL", "TSLA", "GOOG", "NVDA", "ZM");
 
         closeButton.setOnAction(event -> {
             Window window = ((Node) (event.getSource())).getScene().getWindow();
