@@ -1,6 +1,6 @@
-package com.dormire.trading;
+package com.dormire.trading.algorithm;
 
-import com.dormire.trading.utils.IOUtil;
+import com.dormire.trading.algorithm.utils.IOUtil;
 
 import java.io.IOException;
 import java.util.Scanner;

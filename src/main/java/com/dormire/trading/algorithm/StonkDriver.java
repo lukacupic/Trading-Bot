@@ -1,7 +1,7 @@
-package com.dormire.trading;
+package com.dormire.trading.algorithm;
 
-import com.dormire.trading.utils.OSValidator;
-import com.dormire.trading.utils.PriceType;
+import com.dormire.trading.algorithm.utils.OSValidator;
+import com.dormire.trading.algorithm.utils.PriceType;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;

@@ -1,0 +1,41 @@
+.jfx-button {
+    -fx-border-radius: 15pt;
+    -fx-background-radius: 15pt;
+}
+
+.text-field {
+    -fx-prompt-text-fill: gray;
+    -fx-text-inner-color: #bec0c9;
+    -fx-background-insets: 5;
+}
+
+.scroll-pane {
+    -fx-background-color: #2d2c2d;
+}
+
+.scroll-bar:horizontal, .scroll-bar:vertical {
+    -fx-background-color: transparent;
+}
+
+.scroll-bar, .scroll-bar:pressed, .scroll-bar:focused {
+    -fx-font-size: 10;
+}
+
+.scroll-bar:horizontal .track,
+.scroll-bar:vertical .track {
+    -fx-pref-width: 5;
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-background-radius: 0em;
+}
+
+.scroll-bar:horizontal .thumb,
+.scroll-bar:vertical .thumb {
+    -fx-background-color: #1f1f1f;
+    -fx-background-radius: 1em;
+}
+
+.scroll-bar > .increment-button > .increment-arrow,
+.scroll-bar > .decrement-button > .decrement-arrow {
+    -fx-background-color: #1f1f1f;
+}

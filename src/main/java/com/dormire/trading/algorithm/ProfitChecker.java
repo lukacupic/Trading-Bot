@@ -1,6 +1,6 @@
-package com.dormire.trading;
+package com.dormire.trading.algorithm;
 
-import com.dormire.trading.utils.PriceType;
+import com.dormire.trading.algorithm.utils.PriceType;
 
 import java.util.function.Consumer;
 
@@ -16,6 +16,7 @@ public class ProfitChecker extends Thread {
         this.driver = driver;
         this.transactionPrice = transactionPrice;
         this.profitPercentage = profitPercentage;
+        this.setDaemon(true);
     }
 
     public void notify(Consumer<Double> listener) {

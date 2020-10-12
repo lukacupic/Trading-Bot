@@ -1,4 +1,4 @@
-package com.dormire.trading.utils;
+package com.dormire.trading.algorithm.utils;
 
 public class OSValidator {
 

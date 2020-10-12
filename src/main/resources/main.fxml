@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox fx:id="rootElement" alignment="CENTER" prefHeight="800.0" prefWidth="1200.0"
+      style="-fx-background-color: #141414;" xmlns="http://javafx.com/javafx/11.0.1"
+      xmlns:fx="http://javafx.com/fxml/1">
+    <children>
+        <BorderPane minHeight="100.0" prefHeight="100.0" style="-fx-background-color: #141414;" VBox.vgrow="NEVER">
+            <left>
+                <HBox alignment="CENTER" BorderPane.alignment="CENTER">
+                    <children>
+                        <Label alignment="BOTTOM_CENTER" contentDisplay="CENTER" text="Stonk Demo" textFill="#d6d6d6">
+                            <font>
+                                <Font name="System Bold" size="28.0"/>
+                            </font>
+                            <BorderPane.margin>
+                                <Insets/>
+                            </BorderPane.margin>
+                        </Label>
+                    </children>
+                    <BorderPane.margin>
+                        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
+                    </BorderPane.margin>
+                </HBox>
+            </left>
+            <center>
+                <HBox BorderPane.alignment="CENTER">
+                    <BorderPane.margin>
+                        <Insets/>
+                    </BorderPane.margin>
+                </HBox>
+            </center>
+            <right>
+                <HBox alignment="CENTER" BorderPane.alignment="CENTER">
+                    <children>
+                        <JFXButton fx:id="settingsButton" text="Settings" textFill="#d6d6d6">
+                            <font>
+                                <Font size="14.0"/>
+                            </font>
+                        </JFXButton>
+                    </children>
+                    <BorderPane.margin>
+                        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
+                    </BorderPane.margin>
+                </HBox>
+            </right>
+        </BorderPane>
+        <HBox alignment="CENTER_LEFT" VBox.vgrow="SOMETIMES">
+            <children>
+                <VBox alignment="TOP_CENTER">
+                    <children>
+                        <ScrollPane fitToWidth="true" style="-fx-background: #2d2c2d;" stylesheets="@main.css"
+                                    VBox.vgrow="ALWAYS">
+                            <content>
+                                <VBox fx:id="instrumentPane" alignment="CENTER"/>
+                            </content>
+                        </ScrollPane>
+                        <StackPane style="-fx-background-color: #2d2c2d;">
+                            <children>
+                                <JFXButton fx:id="addButton" alignment="CENTER" contentDisplay="CENTER" text="+"
+                                           textAlignment="CENTER" textFill="WHITE">
+                                    <font>
+                                        <Font size="30.0"/>
+                                    </font>
+                                </JFXButton>
+                            </children>
+                            <padding>
+                                <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
+                            </padding>
+                        </StackPane>
+                    </children>
+                </VBox>
+                <BorderPane style="-fx-background-color: #1f1f1f;" HBox.hgrow="ALWAYS">
+                    <center>
+                        <VBox alignment="CENTER" spacing="10.0">
+                            <opaqueInsets>
+                                <Insets/>
+                            </opaqueInsets>
+                            <children>
+                                <Label fx:id="stepLabel" textFill="#d6d6d6">
+                                    <font>
+                                        <Font size="18.0"/>
+                                    </font>
+                                </Label>
+                                <Label fx:id="mainLabel" text="Click + to add an instrument" layoutX="442.0"
+                                       layoutY="348.0" textFill="#d6d6d6">
+                                    <font>
+                                        <Font size="18.0"/>
+                                    </font>
+                                </Label>
+                            </children>
+                        </VBox>
+                    </center>
+                </BorderPane>
+            </children>
+        </HBox>
+    </children>
+</VBox>
