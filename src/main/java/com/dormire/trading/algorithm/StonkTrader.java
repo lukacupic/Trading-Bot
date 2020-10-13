@@ -1,5 +1,7 @@
 package com.dormire.trading.algorithm;
 
+import com.dormire.trading.algorithm.driver.StonkDriver;
+import com.dormire.trading.algorithm.driver.StonkDriverManager;
 import com.dormire.trading.algorithm.utils.PriceType;
 import com.dormire.trading.algorithm.utils.RuntimeUtil;
 import com.dormire.trading.gui.RingManager;
@@ -15,7 +17,8 @@ public class StonkTrader {
     private static final double BUFFER_PERCENTAGE = 0.5;
 
     private StonkDriver driver;
-    private RingManager manager;
+    private RingManager ringManager;
+    private StonkDriverManager driverManager;
     private BlockingQueue<String> queue = new ArrayBlockingQueue<>(1);
 
     private String ticker;
@@ -23,8 +26,10 @@ public class StonkTrader {
     private double profitPercentage;
     private double noStonks;
 
-    public StonkTrader(RingManager manager, String ticker, double transactionPrice, double profitPercentage, double noStonks) {
-        this.manager = manager;
+    public StonkTrader(RingManager ringManager, StonkDriverManager driverManager,
+                       String ticker, double transactionPrice, double profitPercentage, double noStonks) {
+        this.ringManager = ringManager;
+        this.driverManager = driverManager;
         this.ticker = ticker;
         this.transactionPrice = transactionPrice;
         this.profitPercentage = profitPercentage;
@@ -42,25 +47,24 @@ public class StonkTrader {
         }
     }
 
-    private void init() {
+    private void init() throws InterruptedException {
         String url = String.format("https://www.tradingview.com/chart/?symbol=%s", ticker);
-        driver = new StonkDriver(url);
+        driver = driverManager.get();
+        driver.load(url);
 
         ProfitChecker checker = new ProfitChecker(driver, transactionPrice, profitPercentage);
-        checker.notify(profit -> {
-            Platform.runLater(() -> {
-                String message = String.format("Your profit goal has been reached!\n" +
-                        "Set stop loss at $%.2f for %f stonks.", profit, noStonks);
-                manager.showOkAlert(message);
-            });
-        });
+        checker.notify(profit -> Platform.runLater(() -> {
+            String message = String.format("Your profit goal has been reached!\n" +
+                    "Set stop loss at $%.2f for %f stonks.", profit, noStonks);
+            ringManager.showOkAlert(message);
+        }));
         checker.start();
     }
 
     private void step1() throws InterruptedException {
         Platform.runLater(() -> {
-            manager.setCurrentStep(1);
-            manager.setMessage("Waiting for price > %.2f && timer > 5 min...", transactionPrice);
+            ringManager.setCurrentStep(1);
+            ringManager.setMessage("Waiting for price > %.2f && timer > 5 min...", transactionPrice);
         });
 
         RuntimeUtil.sleep(WAIT_TIME);
@@ -69,11 +73,11 @@ public class StonkTrader {
             RuntimeUtil.sleep(1);
         }
 
-        manager.showNotification("Set stop loss for %s at $%.2f for %f stonks.", ticker, transactionPrice, noStonks);
+        ringManager.showNotification("Set stop loss for %s at $%.2f for %f stonks.", ticker, transactionPrice, noStonks);
 
         Platform.runLater(() -> {
             try {
-                manager.showOkAlert("Set stop loss at $%.2f for %f stonks.", transactionPrice, noStonks);
+                ringManager.showOkAlert("Set stop loss at $%.2f for %f stonks.", transactionPrice, noStonks);
                 queue.put("");
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -84,19 +88,19 @@ public class StonkTrader {
 
     private void step2() throws InterruptedException {
         Platform.runLater(() -> {
-            manager.setCurrentStep(2);
-            manager.setMessage("Waiting for price <= %.2f...", transactionPrice);
+            ringManager.setCurrentStep(2);
+            ringManager.setMessage("Waiting for price <= %.2f...", transactionPrice);
         });
 
         while (!(driver.getCurrentPrice(PriceType.SELL) <= BUFFER_PERCENTAGE * transactionPrice)) {
             RuntimeUtil.sleep(LOOP_TIME);
         }
 
-        manager.showNotification("Has the stop loss been activated?");
+        ringManager.showNotification("Has the stop loss been activated?");
 
         Platform.runLater(() -> {
             try {
-                String response = manager.showYesNoAlert("Has the stop loss been activated?");
+                String response = ringManager.showYesNoAlert("Has the stop loss been activated?");
                 queue.put(response);
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -108,7 +112,7 @@ public class StonkTrader {
         if (response.equals("YES")) {
             Platform.runLater(() -> {
                 try {
-                    String fillPrice = manager.showInputDialog("Please enter sell fill price.");
+                    String fillPrice = ringManager.showInputDialog("Please enter sell fill price.");
                     queue.put(fillPrice);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -125,8 +129,8 @@ public class StonkTrader {
 
     private void step3() throws InterruptedException {
         Platform.runLater(() -> {
-            manager.setCurrentStep(3);
-            manager.setMessage("Waiting for price < %.2f && timer > 5 min...", transactionPrice);
+            ringManager.setCurrentStep(3);
+            ringManager.setMessage("Waiting for price < %.2f && timer > 5 min...", transactionPrice);
         });
 
         RuntimeUtil.sleep(WAIT_TIME);
@@ -135,11 +139,11 @@ public class StonkTrader {
             RuntimeUtil.sleep(LOOP_TIME);
         }
 
-        manager.showNotification("Set stop buy for %s at $%.2f for %f stonks.", ticker, transactionPrice, noStonks);
+        ringManager.showNotification("Set stop buy for %s at $%.2f for %f stonks.", ticker, transactionPrice, noStonks);
 
         Platform.runLater(() -> {
             try {
-                manager.showOkAlert("Set stop buy at $%.2f for %f stonks.", transactionPrice, noStonks);
+                ringManager.showOkAlert("Set stop buy at $%.2f for %f stonks.", transactionPrice, noStonks);
                 queue.put("");
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -150,19 +154,19 @@ public class StonkTrader {
 
     private void step4() throws InterruptedException {
         Platform.runLater(() -> {
-            manager.setCurrentStep(4);
-            manager.setMessage("Waiting for price >= %.2f...", transactionPrice);
+            ringManager.setCurrentStep(4);
+            ringManager.setMessage("Waiting for price >= %.2f...", transactionPrice);
         });
 
         while (!(driver.getCurrentPrice(PriceType.BUY) >= (2 - BUFFER_PERCENTAGE) * transactionPrice)) {
             RuntimeUtil.sleep(LOOP_TIME);
         }
 
-        manager.showNotification("Has the stop buy been activated?");
+        ringManager.showNotification("Has the stop buy been activated?");
 
         Platform.runLater(() -> {
             try {
-                String response = manager.showYesNoAlert("Has the stop buy been activated?");
+                String response = ringManager.showYesNoAlert("Has the stop buy been activated?");
                 queue.put(response);
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -174,7 +178,7 @@ public class StonkTrader {
         if (response.equals("YES")) {
             Platform.runLater(() -> {
                 try {
-                    String fillPrice = manager.showInputDialog("Please enter buy fill price.");
+                    String fillPrice = ringManager.showInputDialog("Please enter buy fill price.");
                     queue.put(fillPrice);
                 } catch (InterruptedException e) {
                     e.printStackTrace();

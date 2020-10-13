@@ -1,4 +1,4 @@
-package com.dormire.trading.algorithm;
+package com.dormire.trading.algorithm.driver;
 
 import com.dormire.trading.algorithm.utils.OSValidator;
 import com.dormire.trading.algorithm.utils.PriceType;
@@ -29,9 +29,8 @@ public class StonkDriver {
     /**
      * Creates a new stonk driver.
      */
-    public StonkDriver(String url) {
+    public StonkDriver() {
         this.driver = getDriver();
-        this.driver.get(url);
     }
 
     /**
@@ -57,6 +56,15 @@ public class StonkDriver {
         } else {
             throw new IllegalStateException("Unknown Operating System -- no available driver");
         }
+    }
+
+    /**
+     * Loads the given URL.
+     *
+     * @param url the url to load
+     */
+    public void load(String url) {
+        this.driver.get(url);
     }
 
     /**

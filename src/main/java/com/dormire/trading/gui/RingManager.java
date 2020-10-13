@@ -1,6 +1,7 @@
 package com.dormire.trading.gui;
 
 import com.dormire.trading.algorithm.StonkTrader;
+import com.dormire.trading.algorithm.driver.StonkDriverManager;
 import com.dormire.trading.gui.controllers.ControllerMediator;
 import com.dormire.trading.gui.controllers.MainController;
 import com.dormire.trading.util.NotifcationUtil;
@@ -10,8 +11,8 @@ public class RingManager {
     private StonkTrader trader;
     private MainController mainController;
 
-    public RingManager(Instrument instrument) {
-        this.trader = new StonkTrader(this, instrument.getTicker(),
+    public RingManager(Instrument instrument, StonkDriverManager driverManager) {
+        this.trader = new StonkTrader(this, driverManager, instrument.getTicker(),
                 instrument.getPrice(), instrument.getPercentage(), instrument.getNoStonks());
         this.mainController = ControllerMediator.getInstance().getMainController();
     }
@@ -29,9 +30,9 @@ public class RingManager {
         }).start();
     }
 
-    public String showOkAlert(String format, Object... arguments) {
+    public void showOkAlert(String format, Object... arguments) {
         String message = String.format(format, arguments);
-        return mainController.showAlert(message, "OK").toUpperCase();
+        mainController.showAlert(message, "OK");
     }
 
     public String showYesNoAlert(String format, Object... arguments) {

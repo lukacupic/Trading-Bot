@@ -1,5 +1,6 @@
 package com.dormire.trading.algorithm;
 
+import com.dormire.trading.algorithm.driver.StonkDriver;
 import com.dormire.trading.algorithm.utils.PriceType;
 
 import java.util.function.Consumer;
@@ -30,7 +31,7 @@ public class ProfitChecker extends Thread {
             while (!(driver.getCurrentPrice(PriceType.BUY) >= profit)) {
                 Thread.sleep(1000);
             }
-        } catch (RuntimeException | InterruptedException ignorable) {
+        } catch (RuntimeException | InterruptedException ignored) {
         }
 
         if (listener == null) {

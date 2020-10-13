@@ -1,5 +1,6 @@
 package com.dormire.trading.gui.controllers;
 
+import com.dormire.trading.algorithm.driver.StonkDriverManager;
 import com.dormire.trading.gui.Instrument;
 import com.dormire.trading.gui.scenes.PromptScene;
 import com.dormire.trading.gui.RingManager;
@@ -44,6 +45,8 @@ public class MainController {
     @FXML
     private ImageView ringView;
 
+    private StonkDriverManager driverManager;
+
     private Color focusColor = Color.rgb(31, 31, 31);
     private Color unfocusColor = Color.rgb(45, 44, 45);
 
@@ -56,6 +59,9 @@ public class MainController {
     }
 
     public void initialize() {
+        driverManager = new StonkDriverManager();
+        driverManager.start();
+
         ControllerMediator.getInstance().setMainController(this);
 
         HBox home = loadInstrument();
@@ -111,7 +117,7 @@ public class MainController {
     }
 
     private void createRingManager(Instrument instrument) {
-        RingManager manager = new RingManager(instrument);
+        RingManager manager = new RingManager(instrument, driverManager);
         manager.start();
         ringView.setVisible(true);
     }
