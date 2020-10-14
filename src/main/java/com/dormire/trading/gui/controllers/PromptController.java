@@ -6,9 +6,7 @@ import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXTextField;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.stage.Stage;
-import javafx.stage.Window;
 
 public class PromptController {
 
@@ -25,26 +23,26 @@ public class PromptController {
     private JFXTextField stonkPercentage;
 
     @FXML
-    private JFXButton closeButton;
+    private JFXButton okButton;
 
-    private Scene mainScene;
+    @FXML
+    private JFXButton cancelButton;
 
-    public PromptController(Scene mainScene) {
+    private MainController mainController;
+
+    public PromptController() {
         ControllerManager.getInstance().setPromptController(this);
+        this.mainController = ControllerManager.getInstance().getMainController();
 
-        this.mainScene = mainScene;
     }
 
     public void initialize() {
         instrumentBox.getItems().addAll("AAPL", "TSLA", "GOOG", "NVDA", "ZM");
         instrumentBox.getSelectionModel().selectFirst();
 
-        closeButton.setOnAction(event -> {
-            Window window = ((Node) (event.getSource())).getScene().getWindow();
-            Stage stage = (Stage) window;
+        okButton.setOnAction(event -> {
+            Stage stage = (Stage) ((Node) (event.getSource())).getScene().getWindow();
             stage.close();
-
-            MainController mainController = ControllerManager.getInstance().getMainController();
 
             Instrument instrument = new Instrument(
                     instrumentBox.getSelectionModel().getSelectedItem(),
@@ -53,8 +51,11 @@ public class PromptController {
                     stonkPercentage.getText());
 
             mainController.addInstrument(instrument);
+        });
 
-            mainScene.getRoot().setEffect(null);
+        cancelButton.setOnAction(event -> {
+            Stage stage = (Stage) ((Node) (event.getSource())).getScene().getWindow();
+            stage.close();
         });
     }
 }

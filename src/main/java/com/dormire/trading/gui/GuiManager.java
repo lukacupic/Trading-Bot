@@ -3,7 +3,7 @@ package com.dormire.trading.gui;
 import com.dormire.trading.algorithm.StonkTrader;
 import com.dormire.trading.gui.controllers.ControllerManager;
 import com.dormire.trading.gui.controllers.MainController;
-import com.dormire.trading.util.NotifcationUtil;
+import com.dormire.trading.utils.NotifcationUtil;
 
 public class GuiManager {
 
@@ -12,10 +12,6 @@ public class GuiManager {
 
     public GuiManager() {
         this.mainController = ControllerManager.getInstance().getMainController();
-    }
-
-    public GuiManager(MainController mainController) {
-        this.mainController = mainController;
     }
 
     public synchronized void showOkAlert(String format, Object... arguments) {

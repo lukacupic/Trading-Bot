@@ -1,7 +1,17 @@
+.root {
+    -fx-font-size: 15px;
+}
+
 .text-input {
     -fx-text-fill: #d6d6d6;
 }
 
 .combo-box .cell:selected {
     -fx-text-fill: #d6d6d6;
+}
+
+.button {
+    -fx-background-color: #d6d6d6;
+    -fx-background-insets: 0, 1, 2;
+    -fx-text-fill: black;
 }

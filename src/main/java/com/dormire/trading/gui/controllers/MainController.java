@@ -52,7 +52,7 @@ public class MainController {
 
     public void initialize() {
         this.driverManager = new StonkDriverManager();
-        this.guiManager = new GuiManager(this);
+        this.guiManager = new GuiManager();
         this.instrumentManager = new InstrumentManager(instrumentPane);
 
         driverManager.start();

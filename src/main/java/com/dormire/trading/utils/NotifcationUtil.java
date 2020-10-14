@@ -1,4 +1,4 @@
-package com.dormire.trading.util;
+package com.dormire.trading.utils;
 
 import dorkbox.notify.Notify;
 import dorkbox.notify.Pos;
