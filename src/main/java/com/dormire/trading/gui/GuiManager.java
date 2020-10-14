@@ -18,7 +18,7 @@ public class GuiManager {
         this.mainController = mainController;
     }
 
-    public void showOkAlert(String format, Object... arguments) {
+    public synchronized void showOkAlert(String format, Object... arguments) {
         String message = String.format(format, arguments);
         mainController.showAlert(message, "OK");
     }
@@ -33,12 +33,12 @@ public class GuiManager {
         return mainController.showInputDialog(message).toUpperCase();
     }
 
-    public void showNotification(String format, Object... arguments) {
+    public synchronized void showNotification(String format, Object... arguments) {
         String message = String.format(format, arguments);
         NotifcationUtil.showNotification(message);
     }
 
-    public void setStep(int step) {
+    public synchronized void setStep(int step) {
         if (step == 0) {
             mainController.updateStepLabel("");
         } else {
@@ -46,7 +46,7 @@ public class GuiManager {
         }
     }
 
-    public void setMessage(String format, Object... arguments) {
+    public synchronized void setMessage(String format, Object... arguments) {
         if (format == null) {
             mainController.updateMainLabel("");
         } else {
@@ -55,16 +55,17 @@ public class GuiManager {
         }
     }
 
-    public void setActiveTrader(StonkTrader trader) {
+    public synchronized void refresh() {
+        if (activeTrader == null) return;
+        setStep(activeTrader.getStep());
+        setMessage(activeTrader.getMessage());
+    }
+
+    public synchronized void setActiveTrader(StonkTrader trader) {
         this.activeTrader = trader;
     }
 
     public StonkTrader getActiveTrader() {
         return activeTrader;
-    }
-
-    public void refresh() {
-        setStep(activeTrader.getStep());
-        setMessage(activeTrader.getMessage());
     }
 }

@@ -9,7 +9,6 @@ import com.dormire.trading.gui.GuiManager;
 import com.jfoenix.controls.JFXButton;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -54,7 +53,7 @@ public class MainController {
     public void initialize() {
         this.driverManager = new StonkDriverManager();
         this.guiManager = new GuiManager(this);
-        this.instrumentManager = new InstrumentManager(guiManager, instrumentPane);
+        this.instrumentManager = new InstrumentManager(instrumentPane);
 
         driverManager.start();
 
@@ -81,6 +80,7 @@ public class MainController {
         HBox home = loadInstrument();
         home.setOnMouseClicked(event -> {
             instrumentManager.setActive(home);
+            guiManager.setActiveTrader(null);
             guiManager.setStep(0);
             guiManager.setMessage("");
         });
@@ -116,11 +116,10 @@ public class MainController {
         trader.start();
         ringView.setVisible(true);
 
-        HBox instrumentBox = createHBox(instrument, trader);
-        instrumentManager.setActive(instrumentBox);
+        createHBox(instrument, trader);
     }
 
-    private HBox createHBox(Instrument instrument, StonkTrader trader) {
+    private void createHBox(Instrument instrument, StonkTrader trader) {
         HBox instrumentBox = loadInstrument();
 
         new Thread(() -> {
@@ -136,13 +135,13 @@ public class MainController {
             guiManager.refresh();
         });
 
+        instrumentManager.addInstrument(instrumentBox);
+
         // TODO: remove instrument mouse-clicked duplicate by delegating the task to the instrument itself
         instrumentManager.setActive(instrumentBox);
         guiManager.setActiveTrader(trader);
         guiManager.refresh();
 
-        instrumentManager.addInstrument(instrumentBox);
-        return instrumentBox;
     }
 
     private HBox loadInstrument() {

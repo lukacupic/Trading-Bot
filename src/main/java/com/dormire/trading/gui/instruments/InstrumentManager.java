@@ -12,7 +12,6 @@ public class InstrumentManager {
 
     private List<HBox> instruments;
     private VBox instrumentPane;
-    private GuiManager guiManager;
 
     private Color focusColor = Color.rgb(31, 31, 31);
     private Color unfocusColor = Color.rgb(45, 44, 45);
@@ -20,9 +19,8 @@ public class InstrumentManager {
     private Background focusBackground;
     private Background unfocusBackground;
 
-    public InstrumentManager(GuiManager guiManager, VBox instrumentPane) {
+    public InstrumentManager(VBox instrumentPane) {
         this.instruments = new LinkedList<>();
-        this.guiManager = guiManager;
         this.instrumentPane = instrumentPane;
         this.focusBackground = new Background(new BackgroundFill(focusColor, CornerRadii.EMPTY, Insets.EMPTY));
         this.unfocusBackground = new Background(new BackgroundFill(unfocusColor, CornerRadii.EMPTY, Insets.EMPTY));

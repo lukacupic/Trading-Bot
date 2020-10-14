@@ -20,7 +20,7 @@ public class StonkTrader extends Thread {
     private StonkDriver driver;
     private GuiManager guiManager;
     private StonkDriverManager driverManager;
-    private BlockingQueue<String> queue = new ArrayBlockingQueue<>(1);
+    private BlockingQueue<String> queue;
 
     private String ticker;
     private double transactionPrice;
@@ -33,6 +33,7 @@ public class StonkTrader extends Thread {
     public StonkTrader(GuiManager guiManager, StonkDriverManager driverManager, Instrument instrument) {
         this.guiManager = guiManager;
         this.driverManager = driverManager;
+        this.queue = new ArrayBlockingQueue<>(1);
 
         this.ticker = instrument.getTicker();
         this.transactionPrice = instrument.getPrice();
@@ -71,9 +72,18 @@ public class StonkTrader extends Thread {
 
     private void step1() {
         setStep(1);
-        setMessage("Waiting for price > %.2f && timer > 5 min...", transactionPrice);
 
-        RuntimeUtil.sleep(WAIT_TIME);
+        Timer timer = new Timer(WAIT_TIME, seconds -> {
+            String format1 = "Waiting for price > %.2f";
+            String format2 = "&& timer > %d seconds";
+
+            if (seconds > 0) {
+                setMessage(format1 + format2 + "...", transactionPrice, seconds);
+            } else {
+                setMessage(format1 + "...", transactionPrice);
+            }
+        });
+        timer.start();
 
         while (!(driver.getCurrentPrice(PriceType.SELL) > transactionPrice)) {
             RuntimeUtil.sleep(1);
@@ -108,9 +118,18 @@ public class StonkTrader extends Thread {
 
     private void step3() {
         setStep(3);
-        setMessage("Waiting for price < %.2f && timer > 5 min...", transactionPrice);
 
-        RuntimeUtil.sleep(WAIT_TIME);
+        Timer timer = new Timer(WAIT_TIME, seconds -> {
+            String format1 = "Waiting for price < %.2f";
+            String format2 = "&& timer > %d min";
+
+            if (seconds > 0) {
+                setMessage(format1 + format2 + "...", transactionPrice, seconds);
+            } else {
+                setMessage(format1 + "...", transactionPrice);
+            }
+        });
+        timer.start();
 
         while (!(driver.getCurrentPrice(PriceType.BUY) < transactionPrice)) {
             RuntimeUtil.sleep(LOOP_TIME);
@@ -207,4 +226,5 @@ public class StonkTrader extends Thread {
     public String getMessage() {
         return currentMessage;
     }
+
 }
