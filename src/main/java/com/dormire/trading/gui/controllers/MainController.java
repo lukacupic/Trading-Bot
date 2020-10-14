@@ -3,10 +3,10 @@ package com.dormire.trading.gui.controllers;
 import com.dormire.trading.algorithm.StonkTrader;
 import com.dormire.trading.algorithm.driver.StonkDriverManager;
 import com.dormire.trading.gui.instruments.Instrument;
+import com.dormire.trading.gui.instruments.InstrumentManager;
 import com.dormire.trading.gui.scenes.PromptScene;
 import com.dormire.trading.gui.GuiManager;
 import com.jfoenix.controls.JFXButton;
-import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
@@ -16,7 +16,6 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
@@ -44,28 +43,22 @@ public class MainController {
     @FXML
     private ImageView ringView;
 
-    private StonkDriverManager driverManager = new StonkDriverManager();
-
     private GuiManager guiManager;
-
-    private Color focusColor = Color.rgb(31, 31, 31);
-    private Color unfocusColor = Color.rgb(45, 44, 45);
-
-    private Background focusBackground;
-    private final Background unfocusBackground;
+    private InstrumentManager instrumentManager;
+    private StonkDriverManager driverManager;
 
     public MainController() {
-        this.focusBackground = new Background(new BackgroundFill(focusColor, CornerRadii.EMPTY, Insets.EMPTY));
-        this.unfocusBackground = new Background(new BackgroundFill(unfocusColor, CornerRadii.EMPTY, Insets.EMPTY));
+        ControllerManager.getInstance().setMainController(this);
     }
 
     public void initialize() {
-        ControllerManager.getInstance().setMainController(this);
+        this.driverManager = new StonkDriverManager();
+        this.guiManager = new GuiManager(this);
+        this.instrumentManager = new InstrumentManager(guiManager, instrumentPane);
 
-        this.guiManager = new GuiManager();
         driverManager.start();
 
-        HBox home = createHomeButton();
+        createHomeButton();
 
         addButton.setOnAction(event -> {
             try {
@@ -84,26 +77,19 @@ public class MainController {
         bindLabelFontSize(mainLabel, 0.8 * ringSize, 18);
     }
 
-    private HBox createHomeButton() {
+    private void createHomeButton() {
         HBox home = loadInstrument();
         home.setOnMouseClicked(event -> {
-            setHomeButtonAsActive(home);
+            instrumentManager.setActive(home);
+            guiManager.setStep(0);
+            guiManager.setMessage("");
         });
-        bindInstrumentBackgrounds(home);
-        instrumentPane.getChildren().add(home);
+        instrumentManager.addInstrument(home);
 
         ImageView imageView = (ImageView) home.getChildren().get(0);
         InputStream homeStream = getClass().getResourceAsStream("/images/home.png");
         imageView.setImage(new Image(homeStream));
         imageView.setFitWidth(50);
-
-        return home;
-    }
-
-    private void setHomeButtonAsActive(HBox home) {
-        home.requestFocus();
-        guiManager.setStep(0);
-        guiManager.setMessage("");
     }
 
     private void bindLabelFontSize(Label label, double ringSize, double defaultFontSize) {
@@ -131,38 +117,32 @@ public class MainController {
         ringView.setVisible(true);
 
         HBox instrumentBox = createHBox(instrument, trader);
-        setInstrumentAsActive(instrumentBox, trader);
+        instrumentManager.setActive(instrumentBox);
     }
 
     private HBox createHBox(Instrument instrument, StonkTrader trader) {
         HBox instrumentBox = loadInstrument();
 
-        // set logo image for the instrument
-        String url = String.format(TICKER_LOGO_URL, instrument.getTicker());
-        ImageView imageView = (ImageView) instrumentBox.getChildren().get(0);
-        imageView.setImage(new Image(url));
+        new Thread(() -> {
+            // set logo image for the instrument
+            String url = String.format(TICKER_LOGO_URL, instrument.getTicker());
+            ImageView imageView = (ImageView) instrumentBox.getChildren().get(0);
+            imageView.setImage(new Image(url));
+        }).start();
 
         instrumentBox.setOnMouseClicked(event -> {
-            setInstrumentAsActive(instrumentBox, trader);
+            instrumentManager.setActive(instrumentBox);
+            guiManager.setActiveTrader(trader);
+            guiManager.refresh();
         });
 
-        bindInstrumentBackgrounds(instrumentBox);
-
-        instrumentPane.getChildren().add(instrumentBox);
-        return instrumentBox;
-    }
-
-    private void setInstrumentAsActive(HBox instrument, StonkTrader trader) {
-        instrument.requestFocus();
+        // TODO: remove instrument mouse-clicked duplicate by delegating the task to the instrument itself
+        instrumentManager.setActive(instrumentBox);
         guiManager.setActiveTrader(trader);
         guiManager.refresh();
-    }
 
-    private void bindInstrumentBackgrounds(HBox instrument) {
-        instrument.backgroundProperty().bind(Bindings
-                .when(instrument.focusedProperty())
-                .then(focusBackground)
-                .otherwise(unfocusBackground));
+        instrumentManager.addInstrument(instrumentBox);
+        return instrumentBox;
     }
 
     private HBox loadInstrument() {

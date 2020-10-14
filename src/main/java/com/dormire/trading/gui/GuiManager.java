@@ -14,6 +14,10 @@ public class GuiManager {
         this.mainController = ControllerManager.getInstance().getMainController();
     }
 
+    public GuiManager(MainController mainController) {
+        this.mainController = mainController;
+    }
+
     public void showOkAlert(String format, Object... arguments) {
         String message = String.format(format, arguments);
         mainController.showAlert(message, "OK");

@@ -30,13 +30,14 @@ public class PromptController {
     private Scene mainScene;
 
     public PromptController(Scene mainScene) {
+        ControllerManager.getInstance().setPromptController(this);
+
         this.mainScene = mainScene;
     }
 
     public void initialize() {
-        ControllerManager.getInstance().setPromptController(this);
-
         instrumentBox.getItems().addAll("AAPL", "TSLA", "GOOG", "NVDA", "ZM");
+        instrumentBox.getSelectionModel().selectFirst();
 
         closeButton.setOnAction(event -> {
             Window window = ((Node) (event.getSource())).getScene().getWindow();

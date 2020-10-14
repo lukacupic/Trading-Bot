@@ -156,7 +156,6 @@ public class StonkTrader extends Thread {
     }
 
     private void showOkAlert(String format, Object... arguments) {
-        if (guiManager.getActiveTrader() != this) return;
         Platform.runLater(() -> {
             try {
                 guiManager.showOkAlert(format, arguments);
