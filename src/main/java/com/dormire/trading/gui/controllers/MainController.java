@@ -1,13 +1,12 @@
 package com.dormire.trading.gui.controllers;
 
+import com.dormire.trading.algorithm.StonkTrader;
 import com.dormire.trading.algorithm.driver.StonkDriverManager;
-import com.dormire.trading.gui.Instrument;
+import com.dormire.trading.gui.instruments.Instrument;
 import com.dormire.trading.gui.scenes.PromptScene;
-import com.dormire.trading.gui.RingManager;
+import com.dormire.trading.gui.GuiManager;
 import com.jfoenix.controls.JFXButton;
 import javafx.beans.binding.Bindings;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
@@ -45,7 +44,9 @@ public class MainController {
     @FXML
     private ImageView ringView;
 
-    private StonkDriverManager driverManager;
+    private StonkDriverManager driverManager = new StonkDriverManager();
+
+    private GuiManager guiManager;
 
     private Color focusColor = Color.rgb(31, 31, 31);
     private Color unfocusColor = Color.rgb(45, 44, 45);
@@ -59,19 +60,12 @@ public class MainController {
     }
 
     public void initialize() {
-        driverManager = new StonkDriverManager();
+        ControllerManager.getInstance().setMainController(this);
+
+        this.guiManager = new GuiManager();
         driverManager.start();
 
-        ControllerMediator.getInstance().setMainController(this);
-
-        HBox home = loadInstrument();
-        setupInstrument(home);
-        instrumentPane.getChildren().add(home);
-
-        ImageView imageView = (ImageView) home.getChildren().get(0);
-        InputStream homeStream = getClass().getResourceAsStream("/images/home.png");
-        imageView.setImage(new Image(homeStream));
-        imageView.setFitWidth(50);
+        HBox home = createHomeButton();
 
         addButton.setOnAction(event -> {
             try {
@@ -90,6 +84,28 @@ public class MainController {
         bindLabelFontSize(mainLabel, 0.8 * ringSize, 18);
     }
 
+    private HBox createHomeButton() {
+        HBox home = loadInstrument();
+        home.setOnMouseClicked(event -> {
+            setHomeButtonAsActive(home);
+        });
+        bindInstrumentBackgrounds(home);
+        instrumentPane.getChildren().add(home);
+
+        ImageView imageView = (ImageView) home.getChildren().get(0);
+        InputStream homeStream = getClass().getResourceAsStream("/images/home.png");
+        imageView.setImage(new Image(homeStream));
+        imageView.setFitWidth(50);
+
+        return home;
+    }
+
+    private void setHomeButtonAsActive(HBox home) {
+        home.requestFocus();
+        guiManager.setStep(0);
+        guiManager.setMessage("");
+    }
+
     private void bindLabelFontSize(Label label, double ringSize, double defaultFontSize) {
         Font defaultFont = Font.font(defaultFontSize);
 
@@ -98,7 +114,6 @@ public class MainController {
             tempText.setFont(defaultFont);
 
             double textWidth = tempText.getLayoutBounds().getWidth();
-            System.out.println(label + " " + textWidth);
 
             if (textWidth <= ringSize) {
                 label.setFont(defaultFont);
@@ -111,18 +126,15 @@ public class MainController {
     }
 
     public void addInstrument(Instrument instrument) {
-        updateMainLabel("Loading, please wait...");
-        createHBox(instrument);
-        createRingManager(instrument);
-    }
-
-    private void createRingManager(Instrument instrument) {
-        RingManager manager = new RingManager(instrument, driverManager);
-        manager.start();
+        StonkTrader trader = new StonkTrader(guiManager, driverManager, instrument);
+        trader.start();
         ringView.setVisible(true);
+
+        HBox instrumentBox = createHBox(instrument, trader);
+        setInstrumentAsActive(instrumentBox, trader);
     }
 
-    private void createHBox(Instrument instrument) {
+    private HBox createHBox(Instrument instrument, StonkTrader trader) {
         HBox instrumentBox = loadInstrument();
 
         // set logo image for the instrument
@@ -130,18 +142,27 @@ public class MainController {
         ImageView imageView = (ImageView) instrumentBox.getChildren().get(0);
         imageView.setImage(new Image(url));
 
-        // set instrument bindings and click behaviour
-        setupInstrument(instrumentBox);
+        instrumentBox.setOnMouseClicked(event -> {
+            setInstrumentAsActive(instrumentBox, trader);
+        });
+
+        bindInstrumentBackgrounds(instrumentBox);
 
         instrumentPane.getChildren().add(instrumentBox);
+        return instrumentBox;
     }
 
-    public void updateMainLabel(String text) {
-        mainLabel.setText(text);
+    private void setInstrumentAsActive(HBox instrument, StonkTrader trader) {
+        instrument.requestFocus();
+        guiManager.setActiveTrader(trader);
+        guiManager.refresh();
     }
 
-    public void updateStepLabel(String text) {
-        stepLabel.setText(text);
+    private void bindInstrumentBackgrounds(HBox instrument) {
+        instrument.backgroundProperty().bind(Bindings
+                .when(instrument.focusedProperty())
+                .then(focusBackground)
+                .otherwise(unfocusBackground));
     }
 
     private HBox loadInstrument() {
@@ -152,21 +173,12 @@ public class MainController {
         }
     }
 
-    /**
-     * Sets the bindings and click actions for the given stonk instrument.
-     * The method will bind different instrument background colors depending
-     * on whether an instrument is focused or not. It will also set-up click
-     * actions resulting from clicking on the instrument.
-     *
-     * @param instrument the instrument
-     */
-    private void setupInstrument(HBox instrument) {
-        instrument.setOnMouseClicked(event -> instrument.requestFocus());
+    public void updateMainLabel(String text) {
+        mainLabel.setText(text);
+    }
 
-        instrument.backgroundProperty().bind(Bindings
-                .when(instrument.focusedProperty())
-                .then(focusBackground)
-                .otherwise(unfocusBackground));
+    public void updateStepLabel(String text) {
+        stepLabel.setText(text);
     }
 
     public String showAlert(String text, String... buttons) {

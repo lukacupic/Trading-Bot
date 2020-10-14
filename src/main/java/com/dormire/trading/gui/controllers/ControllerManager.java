@@ -1,13 +1,13 @@
 package com.dormire.trading.gui.controllers;
 
-public class ControllerMediator {
+public class ControllerManager {
 
-    private static final ControllerMediator instance = new ControllerMediator();
+    private static final ControllerManager instance = new ControllerManager();
 
     private MainController mainController;
     private PromptController promptController;
 
-    private ControllerMediator() {
+    private ControllerManager() {
     }
 
     public void setMainController(MainController mainController) {
@@ -22,7 +22,7 @@ public class ControllerMediator {
         return mainController;
     }
 
-    public static ControllerMediator getInstance() {
+    public static ControllerManager getInstance() {
         return instance;
     }
 

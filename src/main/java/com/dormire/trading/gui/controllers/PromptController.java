@@ -1,6 +1,6 @@
 package com.dormire.trading.gui.controllers;
 
-import com.dormire.trading.gui.Instrument;
+import com.dormire.trading.gui.instruments.Instrument;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXTextField;
@@ -34,7 +34,7 @@ public class PromptController {
     }
 
     public void initialize() {
-        ControllerMediator.getInstance().setPromptController(this);
+        ControllerManager.getInstance().setPromptController(this);
 
         instrumentBox.getItems().addAll("AAPL", "TSLA", "GOOG", "NVDA", "ZM");
 
@@ -43,7 +43,7 @@ public class PromptController {
             Stage stage = (Stage) window;
             stage.close();
 
-            MainController mainController = ControllerMediator.getInstance().getMainController();
+            MainController mainController = ControllerManager.getInstance().getMainController();
 
             Instrument instrument = new Instrument(
                     instrumentBox.getSelectionModel().getSelectedItem(),

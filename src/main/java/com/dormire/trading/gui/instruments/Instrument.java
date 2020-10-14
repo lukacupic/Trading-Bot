@@ -1,4 +1,4 @@
-package com.dormire.trading.gui;
+package com.dormire.trading.gui.instruments;
 
 import com.dormire.trading.util.UserInputUtil;
 
@@ -14,6 +14,9 @@ public class Instrument {
         this.price = UserInputUtil.prepareNumber(price);
         this.noStonks = UserInputUtil.prepareNumber(noStonks);
         this.percentage = UserInputUtil.prepareNumber(percentage);
+    }
+
+    public void updateGui() {
     }
 
     public String getTicker() {

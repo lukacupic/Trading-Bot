@@ -1,13 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import com.jfoenix.controls.*?>
-<?import javafx.geometry.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.image.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
+<?import com.jfoenix.controls.JFXButton?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
-<VBox fx:id="rootElement" alignment="CENTER" prefHeight="800.0" prefWidth="1200.0" style="-fx-background-color: #141414;" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1">
+<VBox fx:id="rootElement" alignment="CENTER" prefHeight="800.0" prefWidth="1200.0" style="-fx-background-color: #141414;" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
     <children>
         <BorderPane minHeight="100.0" prefHeight="100.0" style="-fx-background-color: #141414;" VBox.vgrow="NEVER">
             <left>
@@ -74,8 +79,8 @@
                 </VBox>
                 <BorderPane style="-fx-background-color: #1f1f1f;" HBox.hgrow="ALWAYS">
                     <center>
-                        <StackPane prefHeight="150.0" prefWidth="200.0">
-                            <children>
+                  <StackPane>
+                     <children>
                                 <ImageView fx:id="ringView" fitHeight="350.0" fitWidth="350.0" pickOnBounds="true" preserveRatio="true" visible="false">
                                     <image>
                                         <Image url="@../images/ring.png" />
@@ -95,8 +100,8 @@
                                         </Label>
                                     </children>
                                 </VBox>
-                            </children>
-                        </StackPane>
+                     </children>
+                  </StackPane>
                     </center>
                 </BorderPane>
             </children>

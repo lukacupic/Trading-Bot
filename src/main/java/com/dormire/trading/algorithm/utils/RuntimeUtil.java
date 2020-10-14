@@ -1,6 +1,6 @@
 package com.dormire.trading.algorithm.utils;
 
-import com.dormire.trading.gui.RingManager;
+import com.dormire.trading.gui.GuiManager;
 import javafx.application.Platform;
 
 import java.util.concurrent.ArrayBlockingQueue;
@@ -17,9 +17,9 @@ public class RuntimeUtil {
         }
     }
 
-    public static void updateCurrentStep(int value, RingManager manager) throws InterruptedException {
+    public static void updateCurrentStep(int value, GuiManager manager) throws InterruptedException {
         Platform.runLater(() -> {
-            manager.setCurrentStep(value);
+            manager.setStep(value);
             try {
                 queue.put("");
             } catch (InterruptedException e) {
