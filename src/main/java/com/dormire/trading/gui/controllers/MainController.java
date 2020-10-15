@@ -183,4 +183,8 @@ public class MainController {
         Optional<String> result = dialog.showAndWait();
         return result.get();
     }
+
+    public void shutdown() {
+        driverManager.dispose();
+    }
 }

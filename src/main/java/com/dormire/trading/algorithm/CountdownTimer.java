@@ -4,12 +4,12 @@ import com.dormire.trading.algorithm.utils.RuntimeUtil;
 
 import java.util.function.Consumer;
 
-public class Timer {
+public class CountdownTimer {
 
     private int seconds;
     private Consumer<Integer> task;
 
-    public Timer(int seconds, Consumer<Integer> task) {
+    public CountdownTimer(int seconds, Consumer<Integer> task) {
         this.seconds = seconds;
         this.task = task;
     }

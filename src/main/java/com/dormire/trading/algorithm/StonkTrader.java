@@ -16,7 +16,7 @@ public class StonkTrader extends Thread {
 
     private static final int LOOP_TIME = 1; /* in seconds */
     private static final int WAIT_TIME = 5 * 60; /* in seconds */
-    private static final double BUFFER_PERCENTAGE = 0.1;
+    private static final double BUFFER_PERCENTAGE = 0.005;
 
     private StonkDriver driver;
     private GuiManager guiManager;
@@ -35,6 +35,7 @@ public class StonkTrader extends Thread {
         this.guiManager = guiManager;
         this.driverManager = driverManager;
         this.queue = new ArrayBlockingQueue<>(1);
+        this.setDaemon(true);
 
         this.ticker = instrument.getTicker();
         this.transactionPrice = instrument.getPrice();
@@ -74,7 +75,7 @@ public class StonkTrader extends Thread {
     private void step1() {
         setStep(1);
 
-        Timer timer = new Timer(WAIT_TIME, seconds -> {
+        CountdownTimer timer = new CountdownTimer(WAIT_TIME, seconds -> {
             String format1 = "Waiting for price > %.2f ";
             String format2 = "&& timer > " + TimeUtil.formatTime(seconds);
 
@@ -98,7 +99,7 @@ public class StonkTrader extends Thread {
         setStep(2);
         setMessage("Waiting for price <= %.2f...", transactionPrice);
 
-        while (!(driver.getCurrentPrice(PriceType.SELL) <= BUFFER_PERCENTAGE * transactionPrice)) {
+        while (!(driver.getCurrentPrice(PriceType.SELL) <= (1 + BUFFER_PERCENTAGE) * transactionPrice)) {
             RuntimeUtil.sleep(LOOP_TIME);
         }
 
@@ -120,7 +121,7 @@ public class StonkTrader extends Thread {
     private void step3() {
         setStep(3);
 
-        Timer timer = new Timer(WAIT_TIME, seconds -> {
+        CountdownTimer timer = new CountdownTimer(WAIT_TIME, seconds -> {
             String format1 = "Waiting for price < %.2f ";
             String format2 = "&& timer > " + TimeUtil.formatTime(seconds);
 
@@ -144,7 +145,7 @@ public class StonkTrader extends Thread {
         setStep(4);
         setMessage("Waiting for price >= %.2f...", transactionPrice);
 
-        while (!(driver.getCurrentPrice(PriceType.BUY) >= (2 - BUFFER_PERCENTAGE) * transactionPrice)) {
+        while (!(driver.getCurrentPrice(PriceType.BUY) >= (1 - BUFFER_PERCENTAGE) * transactionPrice)) {
             RuntimeUtil.sleep(LOOP_TIME);
         }
 

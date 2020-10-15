@@ -29,4 +29,13 @@ public class StonkDriverManager {
     public void start() {
         addNewDriver();
     }
+
+    /**
+     * Disposes and shuts down all associated drivers in the background.
+     */
+    public void dispose() {
+        for (StonkDriver driver : drivers) {
+            driver.quit();
+        }
+    }
 }

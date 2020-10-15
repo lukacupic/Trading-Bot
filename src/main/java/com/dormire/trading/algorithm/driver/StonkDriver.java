@@ -77,4 +77,11 @@ public class StonkDriver {
         List<WebElement> elements = this.driver.findElements(By.className("buttonText-1vopxN9j"));
         return Double.parseDouble(elements.get(type.equals(PriceType.SELL) ? 0 : 1).getText());
     }
+
+    /**
+     * Quits this driver.
+     */
+    public void quit() {
+        driver.quit();
+    }
 }
