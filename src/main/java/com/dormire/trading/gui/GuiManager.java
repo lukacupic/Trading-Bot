@@ -4,6 +4,7 @@ import com.dormire.trading.algorithm.StonkTrader;
 import com.dormire.trading.gui.controllers.ControllerManager;
 import com.dormire.trading.gui.controllers.MainController;
 import com.dormire.trading.utils.NotifcationUtil;
+import com.dormire.trading.utils.UserInputUtil;
 
 public class GuiManager {
 
@@ -24,9 +25,9 @@ public class GuiManager {
         return mainController.showAlert(message, "YES", "NO").toUpperCase();
     }
 
-    public synchronized String showInputDialog(String format, Object... arguments) {
+    public synchronized double showNumberInputDialog(String format, Object... arguments) {
         String message = String.format(format, arguments);
-        return mainController.showInputDialog(message).toUpperCase();
+        return UserInputUtil.prepareNumber(mainController.showInputDialog(message));
     }
 
     public synchronized void showNotification(String format, Object... arguments) {

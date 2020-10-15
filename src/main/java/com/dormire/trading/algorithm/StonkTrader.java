@@ -21,7 +21,7 @@ public class StonkTrader extends Thread {
     private StonkDriver driver;
     private GuiManager guiManager;
     private StonkDriverManager driverManager;
-    private BlockingQueue<String> queue;
+    private BlockingQueue<Object> queue;
 
     private String ticker;
     private double transactionPrice;
@@ -107,8 +107,7 @@ public class StonkTrader extends Thread {
         String response = showYesNoAlert("Has the stop loss for %s been activated?", ticker);
 
         if (response.equals("YES")) {
-            String fillPrice = showInputDialog("Please enter sell fill price for %s.", ticker);
-            transactionPrice = Double.parseDouble(fillPrice);
+            transactionPrice = showInputDialog("Please enter sell fill price for %s.", ticker);
 
             RuntimeUtil.sleep(WAIT_TIME);
 
@@ -153,8 +152,7 @@ public class StonkTrader extends Thread {
         String response = showYesNoAlert("Has the stop buy for %s been activated?", ticker);
 
         if (response.equals("YES")) {
-            String fillPrice = showInputDialog("Please enter buy fill price for %s.", ticker);
-            transactionPrice = Double.parseDouble(fillPrice);
+            transactionPrice = showInputDialog("Please enter buy fill price for %s.", ticker);
 
         } else if (response.equals("NO")) {
             RuntimeUtil.sleep(60);
@@ -206,19 +204,19 @@ public class StonkTrader extends Thread {
                 e.printStackTrace();
             }
         });
-        return queue.take();
+        return (String) queue.take();
     }
 
-    private String showInputDialog(String format, Object... arguments) throws InterruptedException {
+    private double showInputDialog(String format, Object... arguments) throws InterruptedException {
         Platform.runLater(() -> {
             try {
-                String fillPrice = guiManager.showInputDialog(format, arguments);
+                double fillPrice = guiManager.showNumberInputDialog(format, arguments);
                 queue.put(fillPrice);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         });
-        return queue.take();
+        return (Double) queue.take();
     }
 
     public int getStep() {
