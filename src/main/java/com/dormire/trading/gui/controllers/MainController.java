@@ -160,6 +160,13 @@ public class MainController {
         stepLabel.setText(text);
     }
 
+    // TODO: remove the "new" operator on each call
+    public void updateRingColor(RingColor color) {
+        String imageName = String.format("/images/ring-%s.png", color.name().toLowerCase());
+        InputStream is = getClass().getResourceAsStream(imageName);
+        ringView.setImage(new Image(is));
+    }
+
     public String showAlert(String text, String... buttons) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle(null);

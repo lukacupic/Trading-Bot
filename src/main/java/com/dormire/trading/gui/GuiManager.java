@@ -3,6 +3,7 @@ package com.dormire.trading.gui;
 import com.dormire.trading.algorithm.StonkTrader;
 import com.dormire.trading.gui.controllers.ControllerManager;
 import com.dormire.trading.gui.controllers.MainController;
+import com.dormire.trading.gui.controllers.RingColor;
 import com.dormire.trading.utils.NotifcationUtil;
 import com.dormire.trading.utils.UserInputUtil;
 
@@ -50,6 +51,10 @@ public class GuiManager {
             String message = String.format(format, arguments);
             mainController.updateMainLabel(message);
         }
+    }
+
+    public synchronized void updateRingColor(RingColor color) {
+        mainController.updateRingColor(color);
     }
 
     public synchronized void refresh() {
