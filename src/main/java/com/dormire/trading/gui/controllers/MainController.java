@@ -31,7 +31,7 @@ public class MainController {
     private JFXButton addButton;
 
     @FXML
-    private VBox instrumentPane;
+    private VBox instrumentSidebar;
 
     @FXML
     private Label stepLabel;
@@ -53,11 +53,11 @@ public class MainController {
     public void initialize() {
         this.driverManager = new StonkDriverManager();
         this.guiManager = new GuiManager();
-        this.instrumentManager = new InstrumentManager(instrumentPane);
+        this.instrumentManager = new InstrumentManager(instrumentSidebar);
 
         driverManager.start();
 
-        createHomeButton();
+        createHomeBox();
 
         addButton.setOnAction(event -> {
             try {
@@ -72,27 +72,71 @@ public class MainController {
         ringView.setFitWidth(ringSize);
         ringView.setFitHeight(ringSize);
 
-        bindLabelFontSize(stepLabel, 0.8 * ringSize, 18);
-        bindLabelFontSize(mainLabel, 0.8 * ringSize, 18);
+        bindLabelFont(stepLabel, 0.8 * ringSize, 18);
+        bindLabelFont(mainLabel, 0.8 * ringSize, 18);
     }
 
-    private void createHomeButton() {
-        HBox home = loadInstrument();
-        home.setOnMouseClicked(event -> {
-            instrumentManager.setActive(home);
+    private void createHomeBox() {
+        HBox homeBox = loadInstrument();
+        Instrument homeInstrument = new Instrument(homeBox);
+
+        homeBox.setOnMouseClicked(event -> {
+            instrumentManager.setActive(homeInstrument);
             guiManager.setActiveTrader(null);
             guiManager.setStep(0);
             guiManager.setMessage("");
         });
-        instrumentManager.addInstrument(home);
+        instrumentManager.addInstrument(homeInstrument);
 
-        ImageView imageView = (ImageView) home.getChildren().get(0);
+        ImageView imageView = (ImageView) homeBox.getChildren().get(0);
         InputStream homeStream = getClass().getResourceAsStream("/images/home.png");
         imageView.setImage(new Image(homeStream));
         imageView.setFitWidth(50);
     }
 
-    private void bindLabelFontSize(Label label, double ringSize, double defaultFontSize) {
+    public void addInstrument(Instrument instrument) {
+        StonkTrader trader = new StonkTrader(guiManager, driverManager, instrument);
+        trader.start();
+        ringView.setVisible(true);
+
+        createInstrumentBox(instrument, trader);
+    }
+
+    private void createInstrumentBox(Instrument instrument, StonkTrader trader) {
+        HBox instrumentBox = loadInstrument();
+
+        new Thread(() -> {
+            // set logo image for the instrument
+            String url = String.format(TICKER_LOGO_URL, instrument.getTicker());
+            ImageView imageView = (ImageView) instrumentBox.getChildren().get(0);
+            imageView.setImage(new Image(url));
+        }).start();
+
+        instrumentBox.setOnMouseClicked(event -> {
+            instrumentManager.setActive(instrument);
+            guiManager.setActiveTrader(trader);
+            guiManager.refresh();
+        });
+
+        instrument.setBox(instrumentBox);
+
+        instrumentManager.addInstrument(instrument);
+
+        // TODO: remove instrument mouse-clicked duplicate by delegating the task to the instrument itself
+        instrumentManager.setActive(instrument);
+        guiManager.setActiveTrader(trader);
+        guiManager.refresh();
+    }
+
+    private HBox loadInstrument() {
+        try {
+            return FXMLLoader.load(getClass().getResource("/interfaces/instrument.fxml"));
+        } catch (IOException e) {
+            throw new RuntimeException();
+        }
+    }
+
+    private void bindLabelFont(Label label, double ringSize, double defaultFontSize) {
         Font defaultFont = Font.font(defaultFontSize);
 
         label.textProperty().addListener((observable, oldValue, newValue) -> {
@@ -109,47 +153,6 @@ public class MainController {
                 label.setFont(Font.font(defaultFont.getFamily(), newFontSize));
             }
         });
-    }
-
-    public void addInstrument(Instrument instrument) {
-        StonkTrader trader = new StonkTrader(guiManager, driverManager, instrument);
-        trader.start();
-        ringView.setVisible(true);
-
-        createHBox(instrument, trader);
-    }
-
-    private void createHBox(Instrument instrument, StonkTrader trader) {
-        HBox instrumentBox = loadInstrument();
-
-        new Thread(() -> {
-            // set logo image for the instrument
-            String url = String.format(TICKER_LOGO_URL, instrument.getTicker());
-            ImageView imageView = (ImageView) instrumentBox.getChildren().get(0);
-            imageView.setImage(new Image(url));
-        }).start();
-
-        instrumentBox.setOnMouseClicked(event -> {
-            instrumentManager.setActive(instrumentBox);
-            guiManager.setActiveTrader(trader);
-            guiManager.refresh();
-        });
-
-        instrumentManager.addInstrument(instrumentBox);
-
-        // TODO: remove instrument mouse-clicked duplicate by delegating the task to the instrument itself
-        instrumentManager.setActive(instrumentBox);
-        guiManager.setActiveTrader(trader);
-        guiManager.refresh();
-
-    }
-
-    private HBox loadInstrument() {
-        try {
-            return FXMLLoader.load(getClass().getResource("/interfaces/instrument.fxml"));
-        } catch (IOException e) {
-            throw new RuntimeException();
-        }
     }
 
     public void updateMainLabel(String text) {
@@ -193,5 +196,9 @@ public class MainController {
 
     public void shutdown() {
         driverManager.dispose();
+    }
+
+    public InstrumentManager getInstrumentManager() {
+        return instrumentManager;
     }
 }

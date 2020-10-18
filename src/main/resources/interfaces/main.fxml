@@ -63,7 +63,7 @@
                         <ScrollPane fitToWidth="true" style="-fx-background: #2d2c2d;"
                                     stylesheets="@../stylesheets/main.css" VBox.vgrow="ALWAYS">
                             <content>
-                                <VBox fx:id="instrumentPane" alignment="CENTER"/>
+                                <VBox fx:id="instrumentSidebar" alignment="CENTER"/>
                             </content>
                         </ScrollPane>
                         <StackPane style="-fx-background-color: #2d2c2d;">

@@ -41,11 +41,18 @@ public class PromptController {
         instrumentBox.getSelectionModel().selectFirst();
 
         okButton.setOnAction(event -> {
+            String ticker = instrumentBox.getSelectionModel().getSelectedItem();
+
+            if (mainController.getInstrumentManager().contains(ticker)) {
+                mainController.showAlert("You have already added " + ticker);
+                return;
+            }
+
             Stage stage = (Stage) ((Node) (event.getSource())).getScene().getWindow();
             stage.close();
 
             Instrument instrument = new Instrument(
-                    instrumentBox.getSelectionModel().getSelectedItem(),
+                    ticker,
                     stonkPrice.getText(),
                     noStonks.getText(),
                     stonkPercentage.getText());

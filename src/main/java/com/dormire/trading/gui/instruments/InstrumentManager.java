@@ -1,6 +1,5 @@
 package com.dormire.trading.gui.instruments;
 
-import com.dormire.trading.gui.GuiManager;
 import javafx.geometry.Insets;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -10,30 +9,38 @@ import java.util.List;
 
 public class InstrumentManager {
 
-    private List<HBox> instruments;
-    private VBox instrumentPane;
+    private static final Color focusColor = Color.rgb(31, 31, 31);
+    private static final Color unfocusColor = Color.rgb(45, 44, 45);
 
-    private Color focusColor = Color.rgb(31, 31, 31);
-    private Color unfocusColor = Color.rgb(45, 44, 45);
+    private List<Instrument> instruments;
+    private VBox instrumentSidebar;
 
-    private Background focusBackground;
-    private Background unfocusBackground;
+    private Background focusBackground = new Background(new BackgroundFill(focusColor, CornerRadii.EMPTY, Insets.EMPTY));
+    private Background unfocusBackground = new Background(new BackgroundFill(unfocusColor, CornerRadii.EMPTY, Insets.EMPTY));
 
-    public InstrumentManager(VBox instrumentPane) {
+    public InstrumentManager(VBox instrumentSidebar) {
         this.instruments = new LinkedList<>();
-        this.instrumentPane = instrumentPane;
-        this.focusBackground = new Background(new BackgroundFill(focusColor, CornerRadii.EMPTY, Insets.EMPTY));
-        this.unfocusBackground = new Background(new BackgroundFill(unfocusColor, CornerRadii.EMPTY, Insets.EMPTY));
+        this.instrumentSidebar = instrumentSidebar;
     }
 
-    public void addInstrument(HBox instrument) {
+    public void addInstrument(Instrument instrument) {
         instruments.add(instrument);
-        instrumentPane.getChildren().add(instrument);
+        instrumentSidebar.getChildren().add(instrument.getBox());
     }
 
-    public synchronized void setActive(HBox instrument) {
-        for (HBox current : instruments) {
-            current.setBackground(current == instrument ? focusBackground : unfocusBackground);
+    public boolean contains(String ticker) {
+        for (Instrument current : instruments) {
+            String currentTicker = current.getTicker();
+            if (currentTicker != null && currentTicker.equals(ticker)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public synchronized void setActive(Instrument instrument) {
+        for (Instrument current : instruments) {
+            current.getBox().setBackground(current == instrument ? focusBackground : unfocusBackground);
         }
     }
 }

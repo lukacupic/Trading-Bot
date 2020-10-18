@@ -5,7 +5,6 @@ import com.dormire.trading.algorithm.driver.StonkDriverManager;
 import com.dormire.trading.algorithm.utils.PriceType;
 import com.dormire.trading.algorithm.utils.RuntimeUtil;
 import com.dormire.trading.algorithm.utils.TimeUtil;
-import com.dormire.trading.gui.controllers.RingColor;
 import com.dormire.trading.gui.instruments.Instrument;
 import com.dormire.trading.gui.GuiManager;
 import javafx.application.Platform;
@@ -16,8 +15,9 @@ import java.util.concurrent.BlockingQueue;
 public class StonkTrader extends Thread {
 
     private static final int LOOP_TIME = 1; /* in seconds */
-    private static final int WAIT_TIME = 5; /* in seconds */
-    private static final double BUFFER_PERCENTAGE = 0.005;
+    private static final int WAIT_TIME = 5 * 60; /* in seconds */
+    private static final double BUFFER_PERCENTAGE = 0.001;
+    private static final double VISUAL_BUFFER_PERCENTAGE = 0.002;
 
     private StonkDriver driver;
     private GuiManager guiManager;
@@ -97,7 +97,6 @@ public class StonkTrader extends Thread {
     }
 
     private void step2() throws InterruptedException {
-        guiManager.updateRingColor(RingColor.RED);
         setStep(2);
         setMessage("Waiting for price <= %.2f...", transactionPrice);
 
