@@ -4,12 +4,14 @@ import com.dormire.trading.algorithm.utils.OSValidator;
 import com.dormire.trading.algorithm.utils.PriceType;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
 
+import java.io.InterruptedIOException;
 import java.util.List;
 
 /**
@@ -73,15 +75,22 @@ public class StonkDriver {
      * @param type the price type to fetch (BUY or SELL)
      * @return current stonk price
      */
-    public double getCurrentPrice(PriceType type) {
-        List<WebElement> elements = this.driver.findElements(By.className("buttonText-1vopxN9j"));
-        return Double.parseDouble(elements.get(type.equals(PriceType.SELL) ? 0 : 1).getText());
+    public double getCurrentPrice(PriceType type) throws InterruptedException {
+        try {
+            List<WebElement> elements = driver.findElements(By.className("buttonText-1vopxN9j"));
+            String text = elements.get(type.equals(PriceType.SELL) ? 0 : 1).getText();
+            return Double.parseDouble(text);
+        } catch (NumberFormatException ex) {
+            return -1;
+        } catch (WebDriverException ex) {
+            throw new InterruptedException(ex.getMessage());
+        }
     }
 
     /**
      * Quits this driver.
      */
-    public void quit() {
+    public void shutdown() {
         driver.quit();
     }
 }

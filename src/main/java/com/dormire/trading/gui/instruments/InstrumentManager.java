@@ -28,6 +28,11 @@ public class InstrumentManager {
         instrumentSidebar.getChildren().add(instrument.getBox());
     }
 
+    public void removeInstrument(Instrument instrument) {
+        instruments.remove(instrument);
+        instrumentSidebar.getChildren().remove(instrument.getBox());
+    }
+
     public boolean contains(String ticker) {
         for (Instrument current : instruments) {
             String currentTicker = current.getTicker();

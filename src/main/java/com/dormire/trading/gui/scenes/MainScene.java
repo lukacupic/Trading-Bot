@@ -19,7 +19,7 @@ public class MainScene extends Application {
 
         Parent root = loader.load();
         stage.setScene(new Scene(root, Color.BLACK));
-        stage.setTitle("Stonk Demo v0.0.1");
+        stage.setTitle("Stonk GUI v0.5");
         stage.setMaximized(true);
         stage.setOnCloseRequest(e -> controller.shutdown());
         stage.show();

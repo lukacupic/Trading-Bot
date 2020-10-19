@@ -105,17 +105,24 @@ public class MainController {
     private void createInstrumentBox(Instrument instrument, StonkTrader trader) {
         HBox instrumentBox = loadInstrument();
 
+        // instrument logo
         new Thread(() -> {
-            // set logo image for the instrument
             String url = String.format(TICKER_LOGO_URL, instrument.getTicker());
             ImageView imageView = (ImageView) instrumentBox.getChildren().get(0);
             imageView.setImage(new Image(url));
         }).start();
 
+        // mouse handling
         instrumentBox.setOnMouseClicked(event -> {
             instrumentManager.setActive(instrument);
             guiManager.updateActiveTrader(trader);
             guiManager.refresh();
+        });
+
+        // context menu
+        ContextMenu contextMenu = createContextMenu(instrument, trader);
+        instrumentBox.setOnContextMenuRequested(event -> {
+            contextMenu.show(instrumentBox, event.getScreenX(), event.getScreenY());
         });
 
         instrument.setBox(instrumentBox);
@@ -126,6 +133,24 @@ public class MainController {
         instrumentManager.setActive(instrument);
         guiManager.updateActiveTrader(trader);
         guiManager.refresh();
+    }
+
+    private ContextMenu createContextMenu(Instrument instrument, StonkTrader trader) {
+        ContextMenu menu = new ContextMenu();
+
+        MenuItem item1 = new MenuItem("Edit");
+        item1.setOnAction(event -> {
+//            instrumentManager.edit(instrument);
+        });
+        MenuItem item2 = new MenuItem("Remove");
+        item2.setOnAction(event -> {
+            instrumentManager.removeInstrument(instrument);
+            trader.interrupt();
+        });
+
+        menu.getItems().addAll(item1, item2);
+
+        return menu;
     }
 
     private HBox loadInstrument() {

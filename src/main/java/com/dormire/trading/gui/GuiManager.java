@@ -58,7 +58,7 @@ public class GuiManager {
     }
 
     public synchronized void updateStep(int step) {
-        if (step == 0) {
+        if (step <= 0) {
             updateStepLabel("");
         } else {
             updateStepLabel("STEP " + step);
@@ -126,7 +126,7 @@ public class GuiManager {
         alert.getButtonTypes().setAll(buttonTypes);
 
         Optional<ButtonType> result = alert.showAndWait();
-        return result.get().getText();
+        return result.isPresent() ? result.get().getText() : "";
     }
 
     private static String showInputDialog(String text) {
@@ -136,6 +136,6 @@ public class GuiManager {
         dialog.setContentText(text);
 
         Optional<String> result = dialog.showAndWait();
-        return result.get();
+        return result.orElse("");
     }
 }

@@ -3,12 +3,12 @@ package com.dormire.trading.algorithm;
 import com.dormire.trading.algorithm.driver.StonkDriver;
 import com.dormire.trading.algorithm.driver.StonkDriverManager;
 import com.dormire.trading.algorithm.utils.PriceType;
-import com.dormire.trading.algorithm.utils.RuntimeUtil;
 import com.dormire.trading.algorithm.utils.TimeUtil;
 import com.dormire.trading.gui.instruments.Instrument;
 import com.dormire.trading.gui.GuiManager;
 import javafx.application.Platform;
 
+import java.io.InterruptedIOException;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
@@ -22,6 +22,7 @@ public class StonkTrader extends Thread {
     private StonkDriver driver;
     private GuiManager guiManager;
     private StonkDriverManager driverManager;
+    private ProfitChecker profitChecker;
     private BlockingQueue<Object> queue;
 
     private String ticker;
@@ -49,15 +50,21 @@ public class StonkTrader extends Thread {
         try {
             init();
 
-            while (true) {
+            while (!isInterrupted()) {
                 step1();
                 step2();
                 step3();
                 step4();
             }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        } catch (InterruptedException ignored) {
         }
+
+        shutdown();
+    }
+
+    @Override
+    public void interrupt() {
+        super.interrupt();
     }
 
     private void init() throws InterruptedException {
@@ -67,13 +74,13 @@ public class StonkTrader extends Thread {
         driver = driverManager.get();
         driver.load(url);
 
-        ProfitChecker checker = new ProfitChecker(driver, transactionPrice, profitPercentage);
-        checker.notify(profit -> showOkAlert("Your profit goal has been reached!\n" +
+        profitChecker = new ProfitChecker(driver, transactionPrice, profitPercentage);
+        profitChecker.notify(profit -> showOkAlert("Your profit goal has been reached!\n" +
                 "Set stop loss for %s at $%.2f for %f stonks.", ticker, profit, noStonks));
-        checker.start();
+        profitChecker.start();
     }
 
-    private void step1() {
+    private void step1() throws InterruptedException {
         setStep(1);
 
         CountdownTimer timer = new CountdownTimer(WAIT_TIME, seconds -> {
@@ -89,7 +96,7 @@ public class StonkTrader extends Thread {
         timer.start();
 
         while (!(driver.getCurrentPrice(PriceType.SELL) > transactionPrice)) {
-            RuntimeUtil.sleep(1);
+            sleep(1);
         }
 
         showNotification("Set stop loss for %s at $%.2f for %f stonks.", ticker, transactionPrice, noStonks);
@@ -101,7 +108,7 @@ public class StonkTrader extends Thread {
         setMessage("Waiting for price <= %.2f...", transactionPrice);
 
         while (!(driver.getCurrentPrice(PriceType.SELL) <= (1 + BUFFER_PERCENTAGE) * transactionPrice)) {
-            RuntimeUtil.sleep(LOOP_TIME);
+            sleep(LOOP_TIME);
         }
 
         showNotification("Has the stop loss for %s been activated?", ticker);
@@ -110,15 +117,15 @@ public class StonkTrader extends Thread {
         if (response.equals("YES")) {
             transactionPrice = showInputDialog("Please enter sell fill price for %s.", ticker);
 
-            RuntimeUtil.sleep(WAIT_TIME);
+            sleep(WAIT_TIME);
 
         } else if (response.equals("NO")) {
-            RuntimeUtil.sleep(60);
+            sleep(60);
             step2();
         }
     }
 
-    private void step3() {
+    private void step3() throws InterruptedException {
         setStep(3);
 
         CountdownTimer timer = new CountdownTimer(WAIT_TIME, seconds -> {
@@ -134,7 +141,7 @@ public class StonkTrader extends Thread {
         timer.start();
 
         while (!(driver.getCurrentPrice(PriceType.BUY) < transactionPrice)) {
-            RuntimeUtil.sleep(LOOP_TIME);
+            sleep(LOOP_TIME);
         }
 
         showNotification("Set stop buy for %s at $%.2f for %f stonks.", ticker, transactionPrice, noStonks);
@@ -146,7 +153,7 @@ public class StonkTrader extends Thread {
         setMessage("Waiting for price >= %.2f...", transactionPrice);
 
         while (!(driver.getCurrentPrice(PriceType.BUY) >= (1 - BUFFER_PERCENTAGE) * transactionPrice)) {
-            RuntimeUtil.sleep(LOOP_TIME);
+            sleep(LOOP_TIME);
         }
 
         showNotification("Has the stop buy for %s been activated?", ticker);
@@ -156,9 +163,13 @@ public class StonkTrader extends Thread {
             transactionPrice = showInputDialog("Please enter buy fill price for %s.", ticker);
 
         } else if (response.equals("NO")) {
-            RuntimeUtil.sleep(60);
+            sleep(60);
             step4();
         }
+    }
+
+    static void sleep(int seconds) throws InterruptedException {
+        Thread.sleep(seconds * 1000);
     }
 
     // Internal GUI-handling methods (temporary, I hope...)
@@ -228,4 +239,10 @@ public class StonkTrader extends Thread {
         return currentMessage;
     }
 
+    public void shutdown() {
+        setStep(0);
+        setMessage("");
+        if (profitChecker != null) profitChecker.interrupt();
+        if (driver != null) driver.shutdown();
+    }
 }

@@ -45,4 +45,5 @@ public class Instrument {
     public void setBox(HBox box) {
         this.box = box;
     }
+
 }

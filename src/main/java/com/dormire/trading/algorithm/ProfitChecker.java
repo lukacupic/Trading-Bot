@@ -26,18 +26,20 @@ public class ProfitChecker extends Thread {
 
     @Override
     public void run() {
-        double profit = (1 + profitPercentage / 100) * transactionPrice;
         try {
+            double profit = (1 + profitPercentage / 100) * transactionPrice;
+
             while (!(driver.getCurrentPrice(PriceType.BUY) >= profit)) {
                 Thread.sleep(1000);
             }
-        } catch (RuntimeException | InterruptedException ignored) {
-        }
 
-        if (listener == null) {
-            throw new IllegalStateException("No listener for ProfitChecker!");
-        }
+            if (listener == null) {
+                throw new IllegalStateException("No listener for ProfitChecker!");
+            }
 
-        listener.accept(profit);
+            listener.accept(profit);
+        } catch (InterruptedException ignored) {
+            //shutdown
+        }
     }
 }

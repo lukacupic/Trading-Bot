@@ -35,7 +35,7 @@ public class StonkDriverManager {
      */
     public void dispose() {
         for (StonkDriver driver : drivers) {
-            driver.quit();
+            driver.shutdown();
         }
     }
 }

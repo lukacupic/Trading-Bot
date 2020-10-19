@@ -1,7 +1,5 @@
 package com.dormire.trading.algorithm;
 
-import com.dormire.trading.algorithm.utils.RuntimeUtil;
-
 import java.util.function.Consumer;
 
 public class CountdownTimer {
@@ -14,10 +12,10 @@ public class CountdownTimer {
         this.task = task;
     }
 
-    public void start() {
+    public void start() throws InterruptedException {
         while (seconds >= 0) {
             task.accept(seconds--);
-            RuntimeUtil.sleep(1);
+            StonkTrader.sleep(1);
         }
     }
 }
