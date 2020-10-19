@@ -166,13 +166,13 @@ public class StonkTrader extends Thread {
     private void setMessage(String format, Object... arguments) {
         this.currentMessage = String.format(format, arguments);
         if (guiManager.getActiveTrader() != this) return;
-        Platform.runLater(() -> guiManager.setMessage(format, arguments));
+        Platform.runLater(() -> guiManager.updateMessage(format, arguments));
     }
 
     private void setStep(int step) {
         this.currentStep = step;
         if (guiManager.getActiveTrader() != this) return;
-        Platform.runLater(() -> guiManager.setStep(step));
+        Platform.runLater(() -> guiManager.updateStep(step));
     }
 
     private void showOkAlert(String format, Object... arguments) {

@@ -1,5 +1,6 @@
 package com.dormire.trading.gui.controllers;
 
+import com.dormire.trading.gui.GuiManager;
 import com.dormire.trading.gui.instruments.Instrument;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
@@ -30,10 +31,11 @@ public class PromptController {
 
     private MainController mainController;
 
-    public PromptController() {
-        ControllerManager.getInstance().setPromptController(this);
-        this.mainController = ControllerManager.getInstance().getMainController();
+    private GuiManager guiManager;
 
+    public PromptController() {
+        this.mainController = MainController.getInstance();
+        this.guiManager = GuiManager.getInstance();
     }
 
     public void initialize() {
@@ -44,7 +46,7 @@ public class PromptController {
             String ticker = instrumentBox.getSelectionModel().getSelectedItem();
 
             if (mainController.getInstrumentManager().contains(ticker)) {
-                mainController.showAlert("You have already added " + ticker);
+                guiManager.showOkAlert("You have already added " + ticker);
                 return;
             }
 

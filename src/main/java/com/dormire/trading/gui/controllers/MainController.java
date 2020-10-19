@@ -20,12 +20,12 @@ import javafx.scene.text.Text;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
-import java.util.Optional;
 
 public class MainController {
 
     private static final String TICKER_LOGO_URL = "https://trading212equities.s3.eu-central-1.amazonaws.com/%s.png";
+
+    private static MainController instance;
 
     @FXML
     private JFXButton addButton;
@@ -47,12 +47,12 @@ public class MainController {
     private StonkDriverManager driverManager;
 
     public MainController() {
-        ControllerManager.getInstance().setMainController(this);
+        MainController.instance = this;
     }
 
     public void initialize() {
         this.driverManager = new StonkDriverManager();
-        this.guiManager = new GuiManager();
+        this.guiManager = new GuiManager(ringView, mainLabel, stepLabel);
         this.instrumentManager = new InstrumentManager(instrumentSidebar);
 
         driverManager.start();
@@ -82,9 +82,9 @@ public class MainController {
 
         homeBox.setOnMouseClicked(event -> {
             instrumentManager.setActive(homeInstrument);
-            guiManager.setActiveTrader(null);
-            guiManager.setStep(0);
-            guiManager.setMessage("");
+            guiManager.updateActiveTrader(null);
+            guiManager.updateStep(0);
+            guiManager.updateMessage("");
         });
         instrumentManager.addInstrument(homeInstrument);
 
@@ -114,7 +114,7 @@ public class MainController {
 
         instrumentBox.setOnMouseClicked(event -> {
             instrumentManager.setActive(instrument);
-            guiManager.setActiveTrader(trader);
+            guiManager.updateActiveTrader(trader);
             guiManager.refresh();
         });
 
@@ -124,7 +124,7 @@ public class MainController {
 
         // TODO: remove instrument mouse-clicked duplicate by delegating the task to the instrument itself
         instrumentManager.setActive(instrument);
-        guiManager.setActiveTrader(trader);
+        guiManager.updateActiveTrader(trader);
         guiManager.refresh();
     }
 
@@ -155,50 +155,15 @@ public class MainController {
         });
     }
 
-    public void updateMainLabel(String text) {
-        mainLabel.setText(text);
-    }
-
-    public void updateStepLabel(String text) {
-        stepLabel.setText(text);
-    }
-
-    // TODO: remove the "new" operator on each call
-    public void updateRingColor(RingColor color) {
-        String imageName = String.format("/images/ring-%s.png", color.name().toLowerCase());
-        InputStream is = getClass().getResourceAsStream(imageName);
-        ringView.setImage(new Image(is));
-    }
-
-    public String showAlert(String text, String... buttons) {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle(null);
-        alert.setHeaderText(null);
-        alert.setContentText(text);
-
-        ButtonType[] buttonTypes = Arrays.stream(buttons).map(ButtonType::new).toArray(ButtonType[]::new);
-
-        alert.getButtonTypes().setAll(buttonTypes);
-
-        Optional<ButtonType> result = alert.showAndWait();
-        return result.get().getText();
-    }
-
-    public String showInputDialog(String text) {
-        TextInputDialog dialog = new TextInputDialog();
-        dialog.setTitle(null);
-        dialog.setHeaderText(null);
-        dialog.setContentText(text);
-
-        Optional<String> result = dialog.showAndWait();
-        return result.get();
-    }
-
     public void shutdown() {
         driverManager.dispose();
     }
 
     public InstrumentManager getInstrumentManager() {
         return instrumentManager;
+    }
+
+    public static MainController getInstance() {
+        return instance;
     }
 }
