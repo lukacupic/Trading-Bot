@@ -4,8 +4,11 @@ import java.util.function.Consumer;
 
 public class CountdownTimer {
 
-    private int seconds;
+    private volatile int seconds;
     private Consumer<Integer> task;
+
+    public CountdownTimer() {
+    }
 
     public CountdownTimer(int seconds, Consumer<Integer> task) {
         this.seconds = seconds;
@@ -14,8 +17,17 @@ public class CountdownTimer {
 
     public void start() throws InterruptedException {
         while (seconds >= 0) {
-            task.accept(seconds--);
+            task.accept(seconds);
+            setTime(seconds - 1);
             StonkTrader.sleep(1);
         }
+    }
+
+    public void setTask(Consumer<Integer> task) {
+        this.task = task;
+    }
+
+    public synchronized void setTime(int seconds) {
+        this.seconds = seconds;
     }
 }

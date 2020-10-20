@@ -5,44 +5,49 @@ import com.dormire.trading.algorithm.driver.StonkDriverManager;
 import com.dormire.trading.algorithm.utils.PriceType;
 import com.dormire.trading.algorithm.utils.TimeUtil;
 import com.dormire.trading.gui.instruments.Instrument;
-import com.dormire.trading.gui.GuiManager;
+import com.dormire.trading.gui.GUIManager;
 import javafx.application.Platform;
 
-import java.io.InterruptedIOException;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
 public class StonkTrader extends Thread {
 
-    private static final int LOOP_TIME = 1; /* in seconds */
-    private static final int WAIT_TIME = 5 * 60; /* in seconds */
-    private static final double BUFFER_PERCENTAGE = 0.001;
-    private static final double VISUAL_BUFFER_PERCENTAGE = 0.002;
-
     private StonkDriver driver;
-    private GuiManager guiManager;
+    private GUIManager guiManager;
     private StonkDriverManager driverManager;
     private ProfitChecker profitChecker;
     private BlockingQueue<Object> queue;
+    private CountdownTimer timer;
 
     private String ticker;
     private double transactionPrice;
-    private double profitPercentage;
+    private double profit;
     private double noStonks;
+
+    private int loopTime;
+    private int waitTime;
+
+    private double bufferZone;
+    private double visualBuffer = 0.002;
 
     private int currentStep;
     private String currentMessage;
 
-    public StonkTrader(GuiManager guiManager, StonkDriverManager driverManager, Instrument instrument) {
+    public StonkTrader(GUIManager guiManager, StonkDriverManager driverManager, Instrument instrument) {
         this.guiManager = guiManager;
         this.driverManager = driverManager;
         this.queue = new ArrayBlockingQueue<>(1);
+        this.timer = new CountdownTimer();
         this.setDaemon(true);
 
         this.ticker = instrument.getTicker();
         this.transactionPrice = instrument.getPrice();
-        this.profitPercentage = instrument.getPercentage();
+        this.profit = instrument.getProfit();
         this.noStonks = instrument.getNoStonks();
+        this.loopTime = instrument.getLoopTime();
+        this.waitTime = instrument.getWaitTime();
+        this.bufferZone = instrument.getBufferZone();
     }
 
     @Override
@@ -74,7 +79,7 @@ public class StonkTrader extends Thread {
         driver = driverManager.get();
         driver.load(url);
 
-        profitChecker = new ProfitChecker(driver, transactionPrice, profitPercentage);
+        profitChecker = new ProfitChecker(driver, transactionPrice, profit);
         profitChecker.notify(profit -> showOkAlert("Your profit goal has been reached!\n" +
                 "Set stop loss for %s at $%.2f for %f stonks.", ticker, profit, noStonks));
         profitChecker.start();
@@ -83,7 +88,7 @@ public class StonkTrader extends Thread {
     private void step1() throws InterruptedException {
         setStep(1);
 
-        CountdownTimer timer = new CountdownTimer(WAIT_TIME, seconds -> {
+        timer.setTask(seconds -> {
             String format1 = "Waiting for price > %.2f ";
             String format2 = "&& timer > " + TimeUtil.formatTime(seconds);
 
@@ -93,6 +98,7 @@ public class StonkTrader extends Thread {
                 setMessage(format1 + "...", transactionPrice);
             }
         });
+        timer.setTime(waitTime);
         timer.start();
 
         while (!(driver.getCurrentPrice(PriceType.SELL) > transactionPrice)) {
@@ -107,8 +113,8 @@ public class StonkTrader extends Thread {
         setStep(2);
         setMessage("Waiting for price <= %.2f...", transactionPrice);
 
-        while (!(driver.getCurrentPrice(PriceType.SELL) <= (1 + BUFFER_PERCENTAGE) * transactionPrice)) {
-            sleep(LOOP_TIME);
+        while (!(driver.getCurrentPrice(PriceType.SELL) <= (1 + bufferZone) * transactionPrice)) {
+            sleep(loopTime);
         }
 
         showNotification("Has the stop loss for %s been activated?", ticker);
@@ -117,7 +123,7 @@ public class StonkTrader extends Thread {
         if (response.equals("YES")) {
             transactionPrice = showInputDialog("Please enter sell fill price for %s.", ticker);
 
-            sleep(WAIT_TIME);
+            sleep(waitTime);
 
         } else if (response.equals("NO")) {
             sleep(60);
@@ -128,7 +134,7 @@ public class StonkTrader extends Thread {
     private void step3() throws InterruptedException {
         setStep(3);
 
-        CountdownTimer timer = new CountdownTimer(WAIT_TIME, seconds -> {
+        timer.setTask(seconds -> {
             String format1 = "Waiting for price < %.2f ";
             String format2 = "&& timer > " + TimeUtil.formatTime(seconds);
 
@@ -138,10 +144,11 @@ public class StonkTrader extends Thread {
                 setMessage(format1 + "...", transactionPrice);
             }
         });
+        timer.setTime(waitTime);
         timer.start();
 
         while (!(driver.getCurrentPrice(PriceType.BUY) < transactionPrice)) {
-            sleep(LOOP_TIME);
+            sleep(loopTime);
         }
 
         showNotification("Set stop buy for %s at $%.2f for %f stonks.", ticker, transactionPrice, noStonks);
@@ -152,8 +159,8 @@ public class StonkTrader extends Thread {
         setStep(4);
         setMessage("Waiting for price >= %.2f...", transactionPrice);
 
-        while (!(driver.getCurrentPrice(PriceType.BUY) >= (1 - BUFFER_PERCENTAGE) * transactionPrice)) {
-            sleep(LOOP_TIME);
+        while (!(driver.getCurrentPrice(PriceType.BUY) >= (1 - bufferZone) * transactionPrice)) {
+            sleep(loopTime);
         }
 
         showNotification("Has the stop buy for %s been activated?", ticker);
@@ -244,5 +251,14 @@ public class StonkTrader extends Thread {
         setMessage("");
         if (profitChecker != null) profitChecker.interrupt();
         if (driver != null) driver.shutdown();
+    }
+
+    public void update(Instrument instrument) {
+        transactionPrice = instrument.getPrice();
+        noStonks = instrument.getNoStonks();
+        profit = instrument.getProfit();
+        loopTime = instrument.getLoopTime();
+        waitTime = instrument.getWaitTime();
+        timer.setTime(waitTime);
     }
 }

@@ -17,9 +17,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
-public class GuiManager {
+public class GUIManager {
 
-    private static GuiManager instance;
+    private static GUIManager instance;
 
     private ImageView ringView;
     private Label mainLabel;
@@ -28,8 +28,8 @@ public class GuiManager {
     private StonkTrader activeTrader;
     private Map<String, Image> ringImages;
 
-    public GuiManager(ImageView ringView, Label mainLabel, Label stepLabel) {
-        GuiManager.instance = this;
+    public GUIManager(ImageView ringView, Label mainLabel, Label stepLabel) {
+        GUIManager.instance = this;
         this.ringImages = new HashMap<>();
 
         this.ringView = ringView;
@@ -49,7 +49,7 @@ public class GuiManager {
 
     public synchronized double showNumberInputDialog(String format, Object... arguments) {
         String message = String.format(format, arguments);
-        return UserInputUtil.prepareNumber(showInputDialog(message));
+        return UserInputUtil.prepareDouble(showInputDialog(message));
     }
 
     public synchronized void showNotification(String format, Object... arguments) {
@@ -111,7 +111,7 @@ public class GuiManager {
         return activeTrader;
     }
 
-    public static GuiManager getInstance() {
+    public static GUIManager getInstance() {
         return instance;
     }
 

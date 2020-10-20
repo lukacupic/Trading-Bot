@@ -1,5 +1,6 @@
 package com.dormire.trading.gui.instruments;
 
+import com.dormire.trading.algorithm.StonkTrader;
 import com.dormire.trading.utils.UserInputUtil;
 import javafx.scene.layout.HBox;
 
@@ -8,14 +9,22 @@ public class Instrument {
     private String ticker;
     private double price;
     private double noStonks;
-    private double percentage;
-    private HBox box;
+    private double profit;
+    private int loopTime;
+    private int waitTime;
+    private double bufferZone;
 
-    public Instrument(String ticker, String price, String noStonks, String percentage) {
-        this.ticker = UserInputUtil.prepareString(ticker);
-        this.price = UserInputUtil.prepareNumber(price);
-        this.noStonks = UserInputUtil.prepareNumber(noStonks);
-        this.percentage = UserInputUtil.prepareNumber(percentage);
+    private HBox box;
+    private StonkTrader trader;
+
+    public Instrument(String ticker, String price, String noStonks, String profit, String loopTime, String waitTime, String bufferZone) {
+        setTicker(ticker);
+        setPrice(price);
+        setNoStonks(noStonks);
+        setProfit(profit);
+        setLoopTime(loopTime);
+        setWaitTime(waitTime);
+        setBufferZone(bufferZone);
     }
 
     public Instrument(HBox box) {
@@ -34,8 +43,48 @@ public class Instrument {
         return noStonks;
     }
 
-    public double getPercentage() {
-        return percentage;
+    public double getProfit() {
+        return profit;
+    }
+
+    public int getLoopTime() {
+        return loopTime;
+    }
+
+    public int getWaitTime() {
+        return waitTime;
+    }
+
+    public double getBufferZone() {
+        return bufferZone;
+    }
+
+    private void setTicker(String ticker) {
+        this.ticker = UserInputUtil.prepareString(ticker);
+    }
+
+    public void setPrice(String price) {
+        this.price = UserInputUtil.prepareDouble(price);
+    }
+
+    public void setNoStonks(String noStonks) {
+        this.noStonks = UserInputUtil.prepareDouble(noStonks);
+    }
+
+    public void setProfit(String profit) {
+        this.profit = UserInputUtil.prepareDouble(profit);
+    }
+
+    public void setLoopTime(String loopTime) {
+        this.loopTime = UserInputUtil.prepareInt(loopTime);
+    }
+
+    public void setWaitTime(String waitTime) {
+        this.waitTime = UserInputUtil.prepareInt(waitTime);
+    }
+
+    public void setBufferZone(String bufferZone) {
+        this.bufferZone = UserInputUtil.prepareDouble(bufferZone);
     }
 
     public HBox getBox() {
@@ -46,4 +95,11 @@ public class Instrument {
         this.box = box;
     }
 
+    public StonkTrader getTrader() {
+        return trader;
+    }
+
+    public void setTrader(StonkTrader trader) {
+        this.trader = trader;
+    }
 }

@@ -6,7 +6,11 @@ public class UserInputUtil {
         return value.trim().toUpperCase();
     }
 
-    public static double prepareNumber(String value) {
+    public static double prepareDouble(String value) {
         return Double.parseDouble(value.replaceAll(",", "."));
+    }
+
+    public static int prepareInt(String value) {
+        return Integer.parseInt(value);
     }
 }

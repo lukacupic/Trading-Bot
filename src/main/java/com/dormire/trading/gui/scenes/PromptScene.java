@@ -1,6 +1,7 @@
 package com.dormire.trading.gui.scenes;
 
 import com.dormire.trading.gui.controllers.PromptController;
+import com.dormire.trading.gui.instruments.Instrument;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -11,25 +12,36 @@ import java.io.IOException;
 
 public class PromptScene {
 
-    public PromptScene(Scene mainScene) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/interfaces/prompt.fxml"));
+    public PromptScene(Scene mainScene) {
+        this(mainScene, new PromptController());
+    }
 
-        PromptController controller = new PromptController();
-        loader.setController(controller);
+    public PromptScene(Scene mainScene, Instrument instrument) {
+        this(mainScene, new PromptController(instrument));
+    }
 
-        Parent root = loader.load();
+    private PromptScene(Scene mainScene, PromptController controller) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/interfaces/prompt.fxml"));
+            loader.setController(controller);
 
-        Stage stage = new Stage();
-        stage.setTitle("Instrument Chooser");
-        stage.setOnHiding(windowEvent -> mainScene.getRoot().setOpacity(1));
-        Scene scene = new Scene(root, 600, 400);
-        stage.setScene(scene);
+            Parent root = loader.load();
 
-        mainScene.getRoot().setOpacity(0.65);
+            Stage stage = new Stage();
+            stage.setTitle("Instrument Chooser");
+            stage.setOnHiding(windowEvent -> mainScene.getRoot().setOpacity(1));
+            Scene scene = new Scene(root, 600, 400);
+            stage.setScene(scene);
 
-        // set and wait for the prompt window to open
-        stage.initOwner(mainScene.getWindow());
-        stage.initModality(Modality.APPLICATION_MODAL);
-        stage.showAndWait();
+            mainScene.getRoot().setOpacity(0.65);
+
+            // set and wait for the prompt window to open
+            stage.initOwner(mainScene.getWindow());
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.showAndWait();
+
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
     }
 }

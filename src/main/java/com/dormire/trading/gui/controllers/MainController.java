@@ -4,8 +4,9 @@ import com.dormire.trading.algorithm.StonkTrader;
 import com.dormire.trading.algorithm.driver.StonkDriverManager;
 import com.dormire.trading.gui.instruments.Instrument;
 import com.dormire.trading.gui.instruments.InstrumentManager;
+import com.dormire.trading.gui.scenes.MainScene;
 import com.dormire.trading.gui.scenes.PromptScene;
-import com.dormire.trading.gui.GuiManager;
+import com.dormire.trading.gui.GUIManager;
 import com.jfoenix.controls.JFXButton;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -42,7 +43,9 @@ public class MainController {
     @FXML
     private ImageView ringView;
 
-    private GuiManager guiManager;
+    private Scene mainScene;
+
+    private GUIManager guiManager;
     private InstrumentManager instrumentManager;
     private StonkDriverManager driverManager;
 
@@ -52,7 +55,7 @@ public class MainController {
 
     public void initialize() {
         this.driverManager = new StonkDriverManager();
-        this.guiManager = new GuiManager(ringView, mainLabel, stepLabel);
+        this.guiManager = new GUIManager(ringView, mainLabel, stepLabel);
         this.instrumentManager = new InstrumentManager(instrumentSidebar);
 
         driverManager.start();
@@ -60,12 +63,7 @@ public class MainController {
         createHomeBox();
 
         addButton.setOnAction(event -> {
-            try {
-                Scene mainScene = ((Node) (event.getSource())).getScene();
-                new PromptScene(mainScene);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            new PromptScene(mainScene);
         });
 
         double ringSize = 350;
@@ -77,7 +75,7 @@ public class MainController {
     }
 
     private void createHomeBox() {
-        HBox homeBox = loadInstrument();
+        HBox homeBox = loadInstrumentBox();
         Instrument homeInstrument = new Instrument(homeBox);
 
         homeBox.setOnMouseClicked(event -> {
@@ -97,13 +95,16 @@ public class MainController {
     public void addInstrument(Instrument instrument) {
         StonkTrader trader = new StonkTrader(guiManager, driverManager, instrument);
         trader.start();
+
+        instrument.setTrader(trader);
+
         ringView.setVisible(true);
 
         createInstrumentBox(instrument, trader);
     }
 
     private void createInstrumentBox(Instrument instrument, StonkTrader trader) {
-        HBox instrumentBox = loadInstrument();
+        HBox instrumentBox = loadInstrumentBox();
 
         // instrument logo
         new Thread(() -> {
@@ -138,22 +139,23 @@ public class MainController {
     private ContextMenu createContextMenu(Instrument instrument, StonkTrader trader) {
         ContextMenu menu = new ContextMenu();
 
-        MenuItem item1 = new MenuItem("Edit");
-        item1.setOnAction(event -> {
-//            instrumentManager.edit(instrument);
+        MenuItem editItem = new MenuItem("Edit");
+        editItem.setOnAction(event -> {
+            new PromptScene(mainScene, instrument);
         });
-        MenuItem item2 = new MenuItem("Remove");
-        item2.setOnAction(event -> {
+
+        MenuItem removeItem = new MenuItem("Remove");
+        removeItem.setOnAction(event -> {
             instrumentManager.removeInstrument(instrument);
             trader.interrupt();
         });
 
-        menu.getItems().addAll(item1, item2);
+        menu.getItems().addAll(editItem, removeItem);
 
         return menu;
     }
 
-    private HBox loadInstrument() {
+    private HBox loadInstrumentBox() {
         try {
             return FXMLLoader.load(getClass().getResource("/interfaces/instrument.fxml"));
         } catch (IOException e) {
@@ -190,5 +192,9 @@ public class MainController {
 
     public static MainController getInstance() {
         return instance;
+    }
+
+    public void setMainScene(Scene mainScene) {
+        this.mainScene = mainScene;
     }
 }
