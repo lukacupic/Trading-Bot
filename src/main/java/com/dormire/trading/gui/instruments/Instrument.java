@@ -13,11 +13,13 @@ public class Instrument {
     private int loopTime;
     private int waitTime;
     private double bufferZone;
+    private double visualBufferZone;
 
     private HBox box;
     private StonkTrader trader;
 
-    public Instrument(String ticker, String price, String noStonks, String profit, String loopTime, String waitTime, String bufferZone) {
+    public Instrument(String ticker, String price, String noStonks, String profit, String loopTime, String waitTime,
+                      String bufferZone, String visualBufferZone) {
         setTicker(ticker);
         setPrice(price);
         setNoStonks(noStonks);
@@ -25,6 +27,7 @@ public class Instrument {
         setLoopTime(loopTime);
         setWaitTime(waitTime);
         setBufferZone(bufferZone);
+        setVisualBufferZone(visualBufferZone);
     }
 
     public Instrument(HBox box) {
@@ -59,6 +62,10 @@ public class Instrument {
         return bufferZone;
     }
 
+    public double getVisualBufferZone() {
+        return visualBufferZone;
+    }
+
     private void setTicker(String ticker) {
         this.ticker = UserInputUtil.prepareString(ticker);
     }
@@ -85,6 +92,10 @@ public class Instrument {
 
     public void setBufferZone(String bufferZone) {
         this.bufferZone = UserInputUtil.prepareDouble(bufferZone);
+    }
+
+    public void setVisualBufferZone(String visualBufferZone) {
+        this.visualBufferZone = UserInputUtil.prepareDouble(visualBufferZone);
     }
 
     public HBox getBox() {

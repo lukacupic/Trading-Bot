@@ -42,12 +42,7 @@ public class StonkTrader extends Thread {
         this.setDaemon(true);
 
         this.ticker = instrument.getTicker();
-        this.transactionPrice = instrument.getPrice();
-        this.profit = instrument.getProfit();
-        this.noStonks = instrument.getNoStonks();
-        this.loopTime = instrument.getLoopTime();
-        this.waitTime = instrument.getWaitTime();
-        this.bufferZone = instrument.getBufferZone();
+        update(instrument); // set remaining values
     }
 
     @Override
@@ -257,6 +252,7 @@ public class StonkTrader extends Thread {
         transactionPrice = instrument.getPrice();
         noStonks = instrument.getNoStonks();
         profit = instrument.getProfit();
+        bufferZone = instrument.getBufferZone();
         loopTime = instrument.getLoopTime();
         waitTime = instrument.getWaitTime();
         timer.setTime(waitTime);

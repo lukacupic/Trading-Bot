@@ -37,6 +37,9 @@ public class PromptController {
     private JFXTextField bufferZone;
 
     @FXML
+    private JFXTextField visualBufferZone;
+
+    @FXML
     private JFXTextField waitTime;
 
     @FXML
@@ -95,7 +98,8 @@ public class PromptController {
                     profit.getText(),
                     loopTime.getText(),
                     waitTime.getText(),
-                    bufferZone.getText()
+                    bufferZone.getText(),
+                    visualBufferZone.getText()
             ));
         });
 
@@ -136,6 +140,7 @@ public class PromptController {
         loopTime.setText(String.valueOf(instrument.getLoopTime()));
         waitTime.setText(String.valueOf(instrument.getWaitTime()));
         bufferZone.setText(String.valueOf(instrument.getBufferZone()));
+        visualBufferZone.setText(String.valueOf(instrument.getVisualBufferZone()));
     }
 
     private void updateInstrumentFields() {
@@ -145,6 +150,7 @@ public class PromptController {
         instrument.setLoopTime(loopTime.getText());
         instrument.setWaitTime(waitTime.getText());
         instrument.setBufferZone(bufferZone.getText());
+        instrument.setVisualBufferZone(visualBufferZone.getText());
     }
 
     private Stage getStage(ActionEvent event) {
