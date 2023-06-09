@@ -1,5 +1,3 @@
 # TradingAPI
 
-A desktop bot using brokerage API to perform semi-automated stock trading
-
-_Work in progress..._
+A demo software bot using brokerage API to perform semi-automated stock trading.
